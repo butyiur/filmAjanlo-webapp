@@ -11,6 +11,10 @@ public interface MovieService {
     Movie update(Long id, Movie movie);
     void delete(Long id);
 
+    // megmaradhatnak a régi egyszerű keresők is
     List<Movie> searchByTitle(String title);
     List<Movie> findByCategory(Long categoryId);
+
+    // ÚJ: rugalmas kereső – minden paraméter opcionális
+    List<Movie> search(String title, String director, Long categoryId, Integer yearFrom, Integer yearTo);
 }

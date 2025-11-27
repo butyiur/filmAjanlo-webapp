@@ -61,4 +61,14 @@ public class MovieServiceImpl implements MovieService {
     public List<Movie> findByCategory(Long categoryId) {
         return movieRepository.findByCategoryId(categoryId);
     }
+
+    @Override
+    public List<Movie> search(String title, String director, Long categoryId, Integer yearFrom, Integer yearTo) {
+        String t  = (title != null && !title.isBlank()) ? title : null;
+        String d  = (director != null && !director.isBlank()) ? director : null;
+        Long c    = (categoryId != null && categoryId > 0) ? categoryId : null;
+        Integer yf = (yearFrom != null) ? yearFrom : null;
+        Integer yt = (yearTo   != null) ? yearTo   : null;
+        return movieRepository.search(t, d, c, yf, yt);
+    }
 }

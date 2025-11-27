@@ -30,9 +30,16 @@ public class MovieController {
     }
 
     // SEARCH by title
+    // SEARCH /api/movies/search?title=&director=&categoryId=&yearFrom=&yearTo=
     @GetMapping("/search")
-    public List<Movie> searchMovies(@RequestParam String title) {
-        return movieService.searchByTitle(title);
+    public List<Movie> searchMovies(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String director,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Integer yearFrom,
+            @RequestParam(required = false) Integer yearTo
+    ) {
+        return movieService.search(title, director, categoryId, yearFrom, yearTo);
     }
 
     // FILTER by category
@@ -58,4 +65,6 @@ public class MovieController {
     public void deleteMovie(@PathVariable Long id) {
         movieService.delete(id);
     }
+
+
 }
