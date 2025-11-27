@@ -1,6 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import api from "../api/client";
+import {
+    Box, Grid, Card, CardContent, CardMedia, CardActions,
+    Typography, TextField, Select, MenuItem, Button, Stack, InputLabel, FormControl, Pagination
+} from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function MovieList() {
     const [movies, setMovies] = useState([]);
@@ -14,25 +21,14 @@ export default function MovieList() {
     const [yearTo, setYearTo] = useState("");
 
     // pagináció + rendezés
-    const [page, setPage] = useState(0);        // 0-index
-    const [size, setSize] = useState(10);
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(12);
     const [sort, setSort] = useState("releaseYear,desc");
-
-    // total oldalszám a backend Page<?> válaszából
     const [totalPages, setTotalPages] = useState(0);
-    const [totalElements, setTotalElements] = useState(0);
 
     useEffect(() => {
         api.get("/categories").then(res => setCategories(res.data));
     }, []);
-
-    // kis debounce a beviteli mezőkre
-    const [tick, setTick] = useState(0);
-    useEffect(() => {
-        const t = setTimeout(() => setTick(tick + 1), 300);
-        return () => clearTimeout(t);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [q, director, yearFrom, yearTo]); // ezek gépelős mezők
 
     const fetchMovies = () => {
         const params = { page, size, sort };
@@ -44,22 +40,21 @@ export default function MovieList() {
 
         api.get("/movies/search", { params })
             .then(res => {
-                setMovies(res.data.content ?? res.data); // Page vagy sima lista fallback
+                setMovies(res.data.content ?? res.data);
                 setTotalPages(res.data.totalPages ?? 1);
-                setTotalElements(res.data.totalElements ?? (res.data.content?.length || res.data.length || 0));
             })
             .catch(() => {
                 setMovies([]);
                 setTotalPages(0);
-                setTotalElements(0);
             });
     };
 
-    // szűrő vagy lapozó/rendezés változásra kérdezzük a backendet
+    // debounce gépelésre
     useEffect(() => {
-        fetchMovies();
+        const t = setTimeout(fetchMovies, 250);
+        return () => clearTimeout(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tick, cat, page, size, sort]);
+    }, [q, director, cat, yearFrom, yearTo, page, size, sort]);
 
     const remove = async (id) => {
         if (!confirm("Biztos törlöd?")) return;
@@ -72,65 +67,138 @@ export default function MovieList() {
         setPage(0);
     };
 
-    const sortOptions = [
-        { v: "releaseYear,desc", label: "Év (csökkenő)" },
-        { v: "releaseYear,asc",  label: "Év (növekvő)" },
-        { v: "rating,desc",      label: "Értékelés (csökkenő)" },
-        { v: "rating,asc",       label: "Értékelés (növekvő)" },
-        { v: "title,asc",        label: "Cím (A→Z)" },
-        { v: "title,desc",       label: "Cím (Z→A)" },
-    ];
-
     return (
-        <div style={{ padding: 20 }}>
-            <h2>Filmek</h2>
+        <Box sx={{ p: 2 }}>
+            {/* Szűrősáv */}
+            <Stack spacing={2} direction={{ xs: "column", md: "row" }} sx={{ mb: 2 }}>
+                <TextField
+                    label="Cím keresése"
+                    value={q}
+                    onChange={(e) => { setQ(e.target.value); setPage(0); }}
+                    size="small"
+                />
+                <TextField
+                    label="Rendező"
+                    value={director}
+                    onChange={(e) => { setDirector(e.target.value); setPage(0); }}
+                    size="small"
+                />
+                <FormControl size="small" sx={{ minWidth: 180 }}>
+                    <InputLabel>Kategória</InputLabel>
+                    <Select
+                        label="Kategória"
+                        value={cat}
+                        onChange={(e) => { setCat(e.target.value); setPage(0); }}
+                    >
+                        <MenuItem value="">Összes</MenuItem>
+                        {categories.map(c => (
+                            <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <TextField
+                    label="Év tól"
+                    type="number"
+                    value={yearFrom}
+                    onChange={(e) => { setYearFrom(e.target.value); setPage(0); }}
+                    size="small"
+                    sx={{ width: 120 }}
+                />
+                <TextField
+                    label="Év ig"
+                    type="number"
+                    value={yearTo}
+                    onChange={(e) => { setYearTo(e.target.value); setPage(0); }}
+                    size="small"
+                    sx={{ width: 120 }}
+                />
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                    <InputLabel>Rendezés</InputLabel>
+                    <Select
+                        label="Rendezés"
+                        value={sort}
+                        onChange={(e) => { setSort(e.target.value); setPage(0); }}
+                    >
+                        <MenuItem value="releaseYear,desc">Év (csökkenő)</MenuItem>
+                        <MenuItem value="releaseYear,asc">Év (növekvő)</MenuItem>
+                        <MenuItem value="rating,desc">Értékelés (csökkenő)</MenuItem>
+                        <MenuItem value="rating,asc">Értékelés (növekvő)</MenuItem>
+                        <MenuItem value="title,asc">Cím (A→Z)</MenuItem>
+                        <MenuItem value="title,desc">Cím (Z→A)</MenuItem>
+                    </Select>
+                </FormControl>
+                <Button variant="outlined" onClick={clearFilters}>Szűrők törlése</Button>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    component={RouterLink}
+                    to="/movies/new"
+                    sx={{ ml: "auto" }}
+                >
+                    Új film
+                </Button>
+            </Stack>
 
-            {/* Szűrősor */}
-            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1.2fr 1fr 0.7fr 0.7fr 1fr auto", gap: 8, marginBottom: 12 }}>
-                <input placeholder="Keresés cím szerint…" value={q} onChange={e => { setQ(e.target.value); setPage(0); }} />
-                <input placeholder="Rendező…" value={director} onChange={e => { setDirector(e.target.value); setPage(0); }} />
-                <select value={cat} onChange={e => { setCat(e.target.value); setPage(0); }}>
-                    <option value="">Összes kategória</option>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-                <input type="number" placeholder="Év tól" value={yearFrom} onChange={e => { setYearFrom(e.target.value); setPage(0); }} />
-                <input type="number" placeholder="Év ig" value={yearTo} onChange={e => { setYearTo(e.target.value); setPage(0); }} />
-                <select value={sort} onChange={e => { setSort(e.target.value); setPage(0); }}>
-                    {sortOptions.map(o => <option key={o.v} value={o.v}>{o.label}</option>)}
-                </select>
-                <div style={{ display: "flex", gap: 8 }}>
-                    <button onClick={clearFilters}>Szűrők törlése</button>
-                    <Link to="/movies/new" style={{ alignSelf: "center" }}>+ Új film</Link>
-                </div>
-            </div>
-
-            {/* Lista */}
-            <ul>
+            {/* Grid kártyák */}
+            <Grid container spacing={2}>
                 {movies.map(m => (
-                    <li key={m.id} style={{ marginBottom: 8 }}>
-                        <strong>{m.title}</strong> ({m.releaseYear}) – {m.category?.name ?? "N/A"}
-                        {m.director ? <> — <em>{m.director}</em></> : null}
-                        <Link to={`/movies/${m.id}/edit`} style={{ marginLeft: 8 }}>Szerkesztés</Link>
-                        <button onClick={() => remove(m.id)} style={{ marginLeft: 8 }}>Törlés</button>
-                    </li>
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={m.id}>
+                        <Card elevation={2} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                            {m.imageUrl ? (
+                                <CardMedia component="img" height="220" image={m.imageUrl} alt={m.title} />
+                            ) : (
+                                <Box sx={{ height: 220, bgcolor: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                    <Typography color="text.secondary">Nincs kép</Typography>
+                                </Box>
+                            )}
+                            <CardContent sx={{ flexGrow: 1 }}>
+                                <Typography variant="h6" gutterBottom>{m.title}</Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    {m.releaseYear} • {m.category?.name ?? "N/A"}
+                                </Typography>
+                                {m.director && (
+                                    <Typography variant="body2" color="text.secondary">
+                                        Rendező: {m.director}
+                                    </Typography>
+                                )}
+                                {typeof m.rating === "number" && (
+                                    <Typography variant="body2" color="text.secondary">
+                                        Értékelés: {m.rating}
+                                    </Typography>
+                                )}
+                            </CardContent>
+                            <CardActions>
+                                <Button
+                                    size="small"
+                                    startIcon={<EditIcon />}
+                                    component={RouterLink}
+                                    to={`/movies/${m.id}/edit`}
+                                >
+                                    Szerkesztés
+                                </Button>
+                                <Button
+                                    size="small"
+                                    color="error"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={() => remove(m.id)}
+                                >
+                                    Törlés
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
                 ))}
-            </ul>
+            </Grid>
 
             {/* Pagináció */}
-            <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                <button disabled={page<=0} onClick={()=>setPage(p=>p-1)}>‹ Előző</button>
-                <span>Oldal: {page+1} / {Math.max(totalPages,1)}</span>
-                <button disabled={page+1 >= totalPages} onClick={()=>setPage(p=>p+1)}>Következő ›</button>
-                <span style={{ marginLeft: 8 }}>Elem/oldal:</span>
-                <select value={size} onChange={e=>{ setSize(Number(e.target.value)); setPage(0); }}>
-                    {[5,10,20,50].map(n => <option key={n} value={n}>{n}</option>)}
-                </select>
-                <span style={{ marginLeft: 8, color: "#666" }}>{totalElements} találat</span>
-            </div>
-
-            {movies.length === 0 && (
-                <div style={{ marginTop: 12, color: "#666" }}>Nincs találat a megadott szűrőkre.</div>
-            )}
-        </div>
+            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 3 }}>
+                <Pagination
+                    count={Math.max(totalPages, 1)}
+                    page={page + 1}
+                    onChange={(_, p) => setPage(p - 1)}
+                    color="primary"
+                />
+            </Stack>
+        </Box>
     );
 }

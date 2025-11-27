@@ -1,0 +1,111 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../api/client";
+import {
+    Container, Paper, Stack, TextField, FormControl, InputLabel, Select, MenuItem,
+    Button, Typography
+} from "@mui/material";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+export default function MovieForm() {
+    const { id } = useParams();
+    const navigate = useNavigate();
+
+    const [categories, setCategories] = useState([]);
+    const [form, setForm] = useState({
+        title: "", director: "", releaseYear: 2020, genre: "", rating: 7.0,
+        description: "", imageUrl: "", categoryId: ""
+    });
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        api.get("/categories").then(r => setCategories(r.data));
+        if (id) {
+            api.get(`/movies/${id}`).then(r => {
+                const m = r.data;
+                setForm({
+                    title: m.title ?? "",
+                    director: m.director ?? "",
+                    releaseYear: m.releaseYear ?? 2020,
+                    genre: m.genre ?? "",
+                    rating: m.rating ?? 7.0,
+                    description: m.description ?? "",
+                    imageUrl: m.imageUrl ?? "",
+                    categoryId: m.category?.id ?? ""
+                });
+            });
+        }
+    }, [id]);
+
+    const change = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setError("");
+        const payload = {
+            title: form.title,
+            director: form.director,
+            releaseYear: Number(form.releaseYear),
+            genre: form.genre,
+            rating: Number(form.rating),
+            description: form.description,
+            imageUrl: form.imageUrl,
+            category: form.categoryId ? { id: Number(form.categoryId) } : null
+        };
+        try {
+            if (id) await api.put(`/movies/${id}`, payload);
+            else     await api.post("/movies", payload);
+            navigate("/");
+        } catch (err) {
+            console.error(err);
+            setError("Mentés sikertelen. Ellenőrizd a mezőket.");
+        }
+    };
+
+    return (
+        <Container maxWidth="sm" sx={{ py: 3 }}>
+            <Paper sx={{ p: 3 }}>
+                <Typography variant="h5" sx={{ mb: 2 }}>
+                    {id ? "Film szerkesztése" : "Új film"}
+                </Typography>
+
+                {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+
+                <form onSubmit={submit}>
+                    <Stack spacing={2}>
+                        <TextField label="Cím" value={form.title} onChange={e=>change("title", e.target.value)} required />
+                        <TextField label="Rendező" value={form.director} onChange={e=>change("director", e.target.value)} />
+                        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                            <TextField label="Megjelenés éve" type="number" value={form.releaseYear}
+                                       onChange={e=>change("releaseYear", e.target.value)} sx={{ flex: 1 }} />
+                            <TextField label="Műfaj" value={form.genre} onChange={e=>change("genre", e.target.value)} sx={{ flex: 1 }} />
+                        </Stack>
+                        <TextField label="Értékelés (1–10)" type="number" inputProps={{ step: "0.1", min: 0, max: 10 }}
+                                   value={form.rating} onChange={e=>change("rating", e.target.value)} />
+                        <TextField label="Leírás" multiline minRows={3} value={form.description}
+                                   onChange={e=>change("description", e.target.value)} />
+                        <TextField label="Plakát URL (imageUrl)" value={form.imageUrl}
+                                   onChange={e=>change("imageUrl", e.target.value)} />
+                        <FormControl>
+                            <InputLabel>Kategória</InputLabel>
+                            <Select label="Kategória" value={form.categoryId} onChange={e=>change("categoryId", e.target.value)}>
+                                <MenuItem value="">-- kategória nélkül --</MenuItem>
+                                {categories.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
+                            </Select>
+                        </FormControl>
+
+                        <Stack direction="row" spacing={2} justifyContent="flex-end">
+                            <Button type="button" variant="outlined" startIcon={<CancelIcon />} onClick={() => navigate("/")}>
+                                Mégse
+                            </Button>
+                            <Button type="submit" variant="contained" startIcon={<SaveIcon />}>
+                                {id ? "Mentés" : "Hozzáadás"}
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </form>
+            </Paper>
+        </Container>
+    );
+}
