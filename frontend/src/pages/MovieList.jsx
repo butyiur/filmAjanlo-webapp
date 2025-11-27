@@ -9,6 +9,18 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
+// ⬇⬇⬇ Fallback KÉP – EZ KINT LEGYEN, NEM A JSX-BEN
+const FALLBACK_IMG =
+    "data:image/svg+xml;utf8," +
+    encodeURIComponent(`
+<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'>
+  <rect width='100%' height='100%' fill='#eeeeee'/>
+  <g fill='#bbbbbb'>
+    <rect x='240' y='110' width='320' height='180' rx='8'/>
+    <circle cx='520' cy='140' r='20'/>
+  </g>
+</svg>`);
+
 export default function MovieList() {
     const [movies, setMovies] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -27,8 +39,9 @@ export default function MovieList() {
     const [totalPages, setTotalPages] = useState(0);
 
     useEffect(() => {
-        api.get("/categories").then(res => setCategories(res.data));
+        api.get("/categories").then((res) => setCategories(res.data));
     }, []);
+
 
     const fetchMovies = () => {
         const params = { page, size, sort };
@@ -48,6 +61,24 @@ export default function MovieList() {
                 setTotalPages(0);
             });
     };
+
+    <Stack direction="row" alignItems="center" justifyContent="center" sx={{ mt: 3, gap: 1 }}>
+        <Pagination
+            count={Math.max(totalPages, 1)}
+            page={page + 1}
+            onChange={(_, p) => setPage(p - 1)}
+            color="primary"
+        />
+        <Typography variant="body2" sx={{ ml: 2 }}>Elem/oldal:</Typography>
+        <FormControl size="small" sx={{ minWidth: 80 }}>
+            <Select
+                value={size}
+                onChange={(e) => { setSize(Number(e.target.value)); setPage(0); }}
+            >
+                {[6, 12, 24, 48].map(n => <MenuItem key={n} value={n}>{n}</MenuItem>)}
+            </Select>
+        </FormControl>
+    </Stack>
 
     // debounce gépelésre
     useEffect(() => {
@@ -71,54 +102,20 @@ export default function MovieList() {
         <Box sx={{ p: 2 }}>
             {/* Szűrősáv */}
             <Stack spacing={2} direction={{ xs: "column", md: "row" }} sx={{ mb: 2 }}>
-                <TextField
-                    label="Cím keresése"
-                    value={q}
-                    onChange={(e) => { setQ(e.target.value); setPage(0); }}
-                    size="small"
-                />
-                <TextField
-                    label="Rendező"
-                    value={director}
-                    onChange={(e) => { setDirector(e.target.value); setPage(0); }}
-                    size="small"
-                />
+                <TextField label="Cím keresése" value={q} onChange={(e)=>{ setQ(e.target.value); setPage(0); }} size="small" />
+                <TextField label="Rendező" value={director} onChange={(e)=>{ setDirector(e.target.value); setPage(0); }} size="small" />
                 <FormControl size="small" sx={{ minWidth: 180 }}>
                     <InputLabel>Kategória</InputLabel>
-                    <Select
-                        label="Kategória"
-                        value={cat}
-                        onChange={(e) => { setCat(e.target.value); setPage(0); }}
-                    >
+                    <Select label="Kategória" value={cat} onChange={(e)=>{ setCat(e.target.value); setPage(0); }}>
                         <MenuItem value="">Összes</MenuItem>
-                        {categories.map(c => (
-                            <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
-                        ))}
+                        {categories.map(c => <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>)}
                     </Select>
                 </FormControl>
-                <TextField
-                    label="Év tól"
-                    type="number"
-                    value={yearFrom}
-                    onChange={(e) => { setYearFrom(e.target.value); setPage(0); }}
-                    size="small"
-                    sx={{ width: 120 }}
-                />
-                <TextField
-                    label="Év ig"
-                    type="number"
-                    value={yearTo}
-                    onChange={(e) => { setYearTo(e.target.value); setPage(0); }}
-                    size="small"
-                    sx={{ width: 120 }}
-                />
+                <TextField label="Év tól" type="number" value={yearFrom} onChange={(e)=>{ setYearFrom(e.target.value); setPage(0); }} size="small" sx={{ width: 120 }} />
+                <TextField label="Év ig" type="number" value={yearTo} onChange={(e)=>{ setYearTo(e.target.value); setPage(0); }} size="small" sx={{ width: 120 }} />
                 <FormControl size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Rendezés</InputLabel>
-                    <Select
-                        label="Rendezés"
-                        value={sort}
-                        onChange={(e) => { setSort(e.target.value); setPage(0); }}
-                    >
+                    <Select label="Rendezés" value={sort} onChange={(e)=>{ setSort(e.target.value); setPage(0); }}>
                         <MenuItem value="releaseYear,desc">Év (csökkenő)</MenuItem>
                         <MenuItem value="releaseYear,asc">Év (növekvő)</MenuItem>
                         <MenuItem value="rating,desc">Értékelés (csökkenő)</MenuItem>
@@ -128,29 +125,33 @@ export default function MovieList() {
                     </Select>
                 </FormControl>
                 <Button variant="outlined" onClick={clearFilters}>Szűrők törlése</Button>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    component={RouterLink}
-                    to="/movies/new"
-                    sx={{ ml: "auto" }}
-                >
+                <Button variant="contained" startIcon={<AddIcon />} component={RouterLink} to="/movies/new" sx={{ ml: "auto" }}>
                     Új film
                 </Button>
             </Stack>
 
             {/* Grid kártyák */}
             <Grid container spacing={2}>
-                {movies.map(m => (
+                {movies.map((m) => (
                     <Grid item xs={12} sm={6} md={4} lg={3} key={m.id}>
                         <Card elevation={2} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
                             {m.imageUrl ? (
-                                <CardMedia component="img" height="220" image={m.imageUrl} alt={m.title} />
+                                <CardMedia
+                                    component="img"
+                                    height="220"
+                                    image={m.imageUrl}
+                                    alt={m.title}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer"
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = FALLBACK_IMG;
+                                    }}
+                                />
                             ) : (
-                                <Box sx={{ height: 220, bgcolor: "#eee", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                    <Typography color="text.secondary">Nincs kép</Typography>
-                                </Box>
+                                <CardMedia component="img" height="220" image={FALLBACK_IMG} alt="Nincs kép" />
                             )}
+
                             <CardContent sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6" gutterBottom>{m.title}</Typography>
                                 <Typography variant="body2" color="text.secondary">
@@ -167,21 +168,12 @@ export default function MovieList() {
                                     </Typography>
                                 )}
                             </CardContent>
+
                             <CardActions>
-                                <Button
-                                    size="small"
-                                    startIcon={<EditIcon />}
-                                    component={RouterLink}
-                                    to={`/movies/${m.id}/edit`}
-                                >
+                                <Button size="small" startIcon={<EditIcon />} component={RouterLink} to={`/movies/${m.id}/edit`}>
                                     Szerkesztés
                                 </Button>
-                                <Button
-                                    size="small"
-                                    color="error"
-                                    startIcon={<DeleteIcon />}
-                                    onClick={() => remove(m.id)}
-                                >
+                                <Button size="small" color="error" startIcon={<DeleteIcon />} onClick={() => remove(m.id)}>
                                     Törlés
                                 </Button>
                             </CardActions>

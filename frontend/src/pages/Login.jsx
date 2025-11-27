@@ -15,6 +15,7 @@ export default function Login() {
         // Basic token előállítása: base64(username:password)
         const token = btoa(`${u}:${p}`);
         auth.set(token);
+        navigate("/"); // elég, a védett műveletek (POST/PUT/DELETE) majd működni fognak
 
         try {
             // próbahívás védett végpontra (pl. POST /movies egy üres teszttel – inkább HEAD)
