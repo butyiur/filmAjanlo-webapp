@@ -3,8 +3,6 @@ package hu.attila.filmajanlo.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-
-
 @Data
 @Entity
 public class Movie {
@@ -28,8 +26,12 @@ public class Movie {
 
     private String posterUrl;
 
-
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    // --- ÚJ: a film tulajdonosa (a user) ---
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User owner;
 }

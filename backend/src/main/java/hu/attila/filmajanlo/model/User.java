@@ -2,6 +2,7 @@ package hu.attila.filmajanlo.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Entity
 @Data
@@ -19,5 +20,9 @@ public class User {
     private String passwordHash;
 
     @Column(nullable = false)
-    private String role = "USER";  // NEM ROLE_USER!
+    private String role = "USER";
+
+    // --- ÚJ: a user saját filmjei ---
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private List<Movie> movies;
 }

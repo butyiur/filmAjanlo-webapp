@@ -31,7 +31,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPasswordHash())
-                    .roles(user.getRole()) // ← EZ A HELYES
+                    .roles(user.getRole())
                     .build();
         };
     }
@@ -43,9 +43,16 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .headers(h -> h.frameOptions(f -> f.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // regisztráció login engedélyezett
+                        .requestMatchers("/api/auth/**").permitAll()      // regisztráció, login
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+
+                        // Publikus: listázás
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+
+                        // Saját lista - autentikáció kell
+                        .requestMatchers("/api/user/**").authenticated()
+
+                        // Minden más művelet csak bejelentkezve
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
