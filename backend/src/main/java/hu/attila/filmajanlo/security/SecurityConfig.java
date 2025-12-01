@@ -31,7 +31,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPasswordHash())
-                    .roles(user.getRole())
+                    .roles(user.getRole())   // USER / ADMIN OK
                     .build();
         };
     }
@@ -42,20 +42,30 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
                 .headers(h -> h.frameOptions(f -> f.disable()))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()      // regisztráció, login
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // Publikus: listázás
-                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
 
-                        // Saját lista - autentikáció kell
                         .requestMatchers("/api/user/**").authenticated()
 
-                        // Minden más művelet csak bejelentkezve
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
+
+                // 🔥 EZ HIÁNYZIK → Basic Auth tényleges engedélyezése!
+                .httpBasic(httpBasic -> {})
+
+                .exceptionHandling(e ->
+                        e.authenticationEntryPoint(
+                                (req, res, ex) -> {
+                                    res.setStatus(401);
+                                    res.getWriter().write("Unauthorized");
+                                }
+                        )
+                );
 
         return http.build();
     }

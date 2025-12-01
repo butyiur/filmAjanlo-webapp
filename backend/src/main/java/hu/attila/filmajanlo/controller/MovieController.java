@@ -20,6 +20,11 @@ public class MovieController {
         this.movieService = movieService;
     }
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "pong";
+    }
+
     // GET all movies
     @GetMapping
     public List<Movie> getAllMovies() {
