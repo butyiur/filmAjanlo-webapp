@@ -6,6 +6,10 @@ import CategoryList from "./pages/CategoryList.jsx";
 import Login from "./pages/Login.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import MyMovies from "./pages/MyMovies";
+
+
+<Route path="/my-movies" element={<MyMovies />} />
 
 export default function App() {
     return (

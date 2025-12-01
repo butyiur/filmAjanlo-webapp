@@ -9,6 +9,8 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import { auth } from "../api/client";
+
 
 // ---- Fallback kép SVG ----
 const FALLBACK_IMG =
@@ -223,6 +225,25 @@ export default function MovieList() {
 
                             {/* ---- Gombok ---- */}
                             <CardActions>
+
+                                {/* ---- Add to My List ---- */}
+                                {auth.get() && (
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        onClick={async () => {
+                                            try {
+                                                await api.post(`/user/movies/${m.id}`);
+                                                alert("Film hozzáadva a saját listádhoz!");
+                                            } catch {
+                                                alert("Hiba történt vagy a film már a listádban van.");
+                                            }
+                                        }}
+                                    >
+                                        Saját listához
+                                    </Button>
+                                )}
+
                                 <Button
                                     size="small"
                                     startIcon={<EditIcon />}
@@ -240,6 +261,7 @@ export default function MovieList() {
                                 >
                                     Törlés
                                 </Button>
+
                             </CardActions>
                         </Card>
                     </Grid>

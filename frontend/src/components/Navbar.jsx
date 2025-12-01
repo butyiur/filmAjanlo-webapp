@@ -23,22 +23,61 @@ export default function Navbar() {
                 <Typography variant="h6" sx={{ flexGrow: 1 }}>
                     Filmajánló
                 </Typography>
+
                 <Stack direction="row" spacing={2}>
-                    <Link component={RouterLink} to="/" color="inherit" underline="hover">
+                    <Link
+                        component={RouterLink}
+                        to="/"
+                        color="inherit"
+                        underline="hover"
+                    >
                         Filmek
                     </Link>
-                    <Link component={RouterLink} to="/categories" color="inherit" underline="hover">
+
+                    <Link
+                        component={RouterLink}
+                        to="/categories"
+                        color="inherit"
+                        underline="hover"
+                    >
                         Kategóriák
                     </Link>
-                    <Link component={RouterLink} to="/movies/new" color="inherit" underline="hover">
-                        Új film
-                    </Link>
+
+                    {/* Új film csak belépve */}
+                    {loggedIn && (
+                        <Link
+                            component={RouterLink}
+                            to="/movies/new"
+                            color="inherit"
+                            underline="hover"
+                        >
+                            Új film
+                        </Link>
+                    )}
+
+                    {/* Saját lista csak belépve */}
+                    {loggedIn && (
+                        <Link
+                            component={RouterLink}
+                            to="/my-movies"
+                            color="inherit"
+                            underline="hover"
+                        >
+                            Saját lista
+                        </Link>
+                    )}
                 </Stack>
+
                 <Box sx={{ flexGrow: 0 }} />
+
                 {loggedIn ? (
-                    <Button color="inherit" onClick={logout}>Kijelentkezés</Button>
+                    <Button color="inherit" onClick={logout}>
+                        Kijelentkezés
+                    </Button>
                 ) : (
-                    <Button color="inherit" component={RouterLink} to="/login">Bejelentkezés</Button>
+                    <Button color="inherit" component={RouterLink} to="/login">
+                        Bejelentkezés
+                    </Button>
                 )}
             </Toolbar>
         </AppBar>
