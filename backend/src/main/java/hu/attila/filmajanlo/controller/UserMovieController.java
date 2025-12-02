@@ -89,4 +89,16 @@ public class UserMovieController {
 
         userMovieRepository.delete(existing);
     }
+
+    @GetMapping("/{id}")
+    public UserMovie getMyMovieById(@AuthenticationPrincipal UserDetails details, @PathVariable Long id) {
+        User user = userRepository.findByUsername(details.getUsername()).orElseThrow();
+        UserMovie movie = userMovieRepository.findById(id).orElseThrow();
+
+        if (!movie.getOwner().getId().equals(user.getId())) {
+            throw new RuntimeException("Not your movie!");
+        }
+
+        return movie;
+    }
 }

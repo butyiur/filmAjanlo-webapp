@@ -26,9 +26,11 @@ export default function UserMovieForm() {
     });
 
     const change = (k, v) => {
-        setForm(prev => ({ ...prev, [k]: v }));
-        // Mentés localStorage-be, hogy visszatéréskor se vesszen el
-        localStorage.setItem("userMovieDraft", JSON.stringify({ ...form, [k]: v }));
+        setForm(prev => {
+            const updated = { ...prev, [k]: v };
+            localStorage.setItem("userMovieDraft", JSON.stringify(updated));
+            return updated;
+        });
     };
 
     // --- Kategóriák betöltése ---
@@ -36,39 +38,46 @@ export default function UserMovieForm() {
         api.get("/categories").then(r => setCategories(r.data));
     }, []);
 
-    // --- Film betöltése szerkesztéshez ---
+    // --- Film betöltése / draft visszaállítás ---
     useEffect(() => {
+        let isMounted = true; // biztonsági flag, hogy ne fusson setState unmounted komponensen
         const savedDraft = localStorage.getItem("userMovieDraft");
 
-        if (id) {
-            // meglévő film szerkesztése
-            api.get(`/user/movies/${id}`).then(r => {
-                const m = r.data;
-                setForm({
-                    title: m.title ?? "",
-                    director: m.director ?? "",
-                    releaseYear: m.releaseYear ?? 2020,
-                    genre: m.genre ?? "",
-                    rating: m.rating ?? 7.0,
-                    description: m.description ?? "",
-                    posterUrl: m.posterUrl ?? "",
-                    categoryId: m.category?.id ?? ""
-                });
-                setLoading(false);
-            });
-        } else if (savedDraft) {
-            // ha új film, de van elmentett draft (nem mentett korábbi beírás)
-            setForm(JSON.parse(savedDraft));
-            setLoading(false);
-        } else {
-            setLoading(false);
-        }
+        const loadData = async () => {
+            try {
+                if (id) {
+                    const { data } = await api.get(`/user/movies/${id}`);
+                    if (isMounted) {
+                        setForm({
+                            title: data.title ?? "",
+                            director: data.director ?? "",
+                            releaseYear: data.releaseYear ?? 2020,
+                            genre: data.genre ?? "",
+                            rating: data.rating ?? 7.0,
+                            description: data.description ?? "",
+                            posterUrl: data.posterUrl ?? "",
+                            categoryId: data.category?.id ?? ""
+                        });
+                    }
+                } else if (savedDraft) {
+                    if (isMounted) setForm(JSON.parse(savedDraft));
+                }
+            } catch (err) {
+                console.error("❌ Hiba a film betöltésekor:", err);
+            } finally {
+                if (isMounted) setLoading(false);
+            }
+        };
+
+        loadData();
+        return () => {
+            isMounted = false; // cleanup, React ajánlás
+        };
     }, [id]);
 
     // --- Mentés ---
     const submit = async (e) => {
         e.preventDefault();
-
         const payload = {
             title: form.title,
             director: form.director,
@@ -84,7 +93,6 @@ export default function UserMovieForm() {
             if (id) await api.put(`/user/movies/${id}`, payload);
             else await api.post("/user/movies", payload);
 
-            // sikeres mentés után töröljük a draftot
             localStorage.removeItem("userMovieDraft");
             navigate("/my-movies");
         } catch (err) {
@@ -103,19 +111,8 @@ export default function UserMovieForm() {
 
                 <form onSubmit={submit}>
                     <Stack spacing={2}>
-                        <TextField
-                            label="Cím"
-                            value={form.title}
-                            onChange={(e) => change("title", e.target.value)}
-                            required
-                        />
-
-                        <TextField
-                            label="Rendező"
-                            value={form.director}
-                            onChange={(e) => change("director", e.target.value)}
-                        />
-
+                        <TextField label="Cím" value={form.title} onChange={(e) => change("title", e.target.value)} required />
+                        <TextField label="Rendező" value={form.director} onChange={(e) => change("director", e.target.value)} />
                         <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
                             <TextField
                                 label="Megjelenés éve"
@@ -195,11 +192,7 @@ export default function UserMovieForm() {
                                 Mégse
                             </Button>
 
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                startIcon={<SaveIcon />}
-                            >
+                            <Button type="submit" variant="contained" startIcon={<SaveIcon />}>
                                 Mentés
                             </Button>
                         </Stack>
