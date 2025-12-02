@@ -8,11 +8,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.*;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -31,41 +34,52 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(user.getUsername())
                     .password(user.getPasswordHash())
-                    .roles(user.getRole())   // USER / ADMIN OK
+                    .roles(user.getRole())   // "USER" vagy "ADMIN"
                     .build();
         };
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(Customizer.withDefaults())
-                .headers(h -> h.frameOptions(f -> f.disable()))
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+        http.csrf(csrf -> csrf.disable());
+        http.cors(Customizer.withDefaults());
+        http.headers(h -> h.frameOptions(f -> f.disable()));
 
-                        .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
+        http.authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/api/user/**").authenticated()
+                // preflight
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .anyRequest().authenticated()
-                )
+                // auth + H2
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/h2-console/**").permitAll()
 
-                // 🔥 EZ HIÁNYZIK → Basic Auth tényleges engedélyezése!
-                .httpBasic(httpBasic -> {})
+                // Filmek
+                .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()       // mindenki láthatja
+                .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN") // csak admin adhat hozzá
+                .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")  // csak admin módosíthat
+                .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN") // csak admin törölhet
 
-                .exceptionHandling(e ->
-                        e.authenticationEntryPoint(
-                                (req, res, ex) -> {
-                                    res.setStatus(401);
-                                    res.getWriter().write("Unauthorized");
-                                }
-                        )
-                );
+                // Kategóriák: GET bárki, módosítás ADMIN
+                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                .requestMatchers("/api/categories/**").hasRole("ADMIN")
+
+                // Saját lista: csak belépve
+                .requestMatchers("/api/user/movies/**").authenticated()
+
+                // minden más
+                .anyRequest().permitAll()
+        );
+
+        http.httpBasic(Customizer.withDefaults());
+
+        http.exceptionHandling(e ->
+                e.authenticationEntryPoint((req, res, ex) -> {
+                    res.setStatus(401);
+                    res.getWriter().write("Unauthorized");
+                })
+        );
 
         return http.build();
     }
@@ -79,8 +93,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of("http://localhost:5173"));
-        cfg.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Authorization","Content-Type"));
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
+        cfg.setExposedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

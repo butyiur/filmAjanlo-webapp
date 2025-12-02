@@ -1,9 +1,9 @@
-package hu.attila.filmajanlo.model;
+package hu.attila.filmajanlo.dto;
 
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class UserRegisterDto {
     private String username;
     private String password;
 }

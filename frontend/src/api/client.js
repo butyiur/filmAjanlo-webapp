@@ -1,16 +1,34 @@
 import axios from "axios";
 
-// Basic Auth token tárolása (base64)
 export const auth = {
-    get() {
+    getToken() {
         return localStorage.getItem("basicAuth") || "";
     },
-    set(token) {
-        if (token) localStorage.setItem("basicAuth", token);
-        else localStorage.removeItem("basicAuth");
+
+    getUser() {
+        const raw = localStorage.getItem("user");
+        return raw ? JSON.parse(raw) : null;   // { username, role }
     },
+
+    getUserRole() {
+        const u = this.getUser();
+        return u ? u.role : null;
+    },
+
+    // login mentése
+    setLogin(username, password, role) {
+        if (!username || !password) {
+            this.logout();
+            return;
+        }
+        const token = btoa(`${username}:${password}`);
+        localStorage.setItem("basicAuth", token);
+        localStorage.setItem("user", JSON.stringify({ username, role }));
+    },
+
     logout() {
         localStorage.removeItem("basicAuth");
+        localStorage.removeItem("user");
     }
 };
 
@@ -18,9 +36,9 @@ const api = axios.create({
     baseURL: "http://localhost:8080/api",
 });
 
-// Minden kérés előtt hozzáadjuk az Authorization-t
+// Minden kéréshez Basic Auth header
 api.interceptors.request.use((config) => {
-    const token = auth.get();
+    const token = auth.getToken();
     if (token) {
         config.headers.Authorization = `Basic ${token}`;
     }
@@ -28,3 +46,6 @@ api.interceptors.request.use((config) => {
 });
 
 export default api;
+
+// külön export – erre volt szükséged
+export const getUserRole = () => auth.getUserRole();

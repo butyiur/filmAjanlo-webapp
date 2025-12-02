@@ -1,0 +1,4 @@
+TODO:
+kategóriák hozzáadása gomb adminnál
+kategóriák felsorolva és rákattintás után kiadja az olyan kategóriájú filmeket
+jegyezze meg a sajatfilm szerkesztes az értékeket azelőttről. 

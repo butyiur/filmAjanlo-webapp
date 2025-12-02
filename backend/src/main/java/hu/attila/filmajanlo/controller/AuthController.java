@@ -5,6 +5,7 @@ import hu.attila.filmajanlo.model.LoginRequest;
 import hu.attila.filmajanlo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     // -------------------
-    // REGISTRATION
+    // REGISTRATION (később finomítjuk)
     // -------------------
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User request) {
@@ -36,7 +37,7 @@ public class AuthController {
     }
 
     // -------------------
-    // LOGIN
+    // LOGIN – csak ellenőriz, token tőled jön (Basic)
     // -------------------
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
@@ -47,6 +48,24 @@ public class AuthController {
             return ResponseEntity.status(401).body("Invalid username or password!");
         }
 
-        return ResponseEntity.ok("Login successful!");
+        // Nincs JWT, csak visszaszólunk, hogy oké
+        return ResponseEntity.ok().build();
+    }
+
+    // -------------------
+    // KI VAGYOK ÉN?  (frontendnek kell a role)
+    // -------------------
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication auth) {
+        if (auth == null || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        User user = userRepository.findByUsername(auth.getName())
+                .orElseThrow();
+
+        // Password NÉLKÜL küldjük vissza
+        record MeDto(Long id, String username, String role) {}
+        return ResponseEntity.ok(new MeDto(user.getId(), user.getUsername(), user.getRole()));
     }
 }

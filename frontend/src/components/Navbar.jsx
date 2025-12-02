@@ -10,10 +10,12 @@ import { auth } from "../api/client";
 
 export default function Navbar() {
     const navigate = useNavigate();
-    const loggedIn = !!auth.get();
+    const user = auth.getUser();
+    const loggedIn = !!user;
+    const isAdmin = user?.role === "ADMIN";
 
     const logout = () => {
-        auth.set("");
+        auth.logout();
         navigate("/");
     };
 
@@ -25,6 +27,7 @@ export default function Navbar() {
                 </Typography>
 
                 <Stack direction="row" spacing={2}>
+                    {/* Filmek: mindenkinek */}
                     <Link
                         component={RouterLink}
                         to="/"
@@ -34,6 +37,7 @@ export default function Navbar() {
                         Filmek
                     </Link>
 
+                    {/* Kategóriák: mindenkinek */}
                     <Link
                         component={RouterLink}
                         to="/categories"
@@ -43,20 +47,9 @@ export default function Navbar() {
                         Kategóriák
                     </Link>
 
-                    {/* Új film csak belépve */}
-                    {loggedIn && (
-                        <Link
-                            component={RouterLink}
-                            to="/movies/new"
-                            color="inherit"
-                            underline="hover"
-                        >
-                            Új film
-                        </Link>
-                    )}
-
-                    {/* Saját lista csak belépve */}
-                    {loggedIn && (
+                    {/* Saját lista: csak sima USER + ADMIN ha akarod.
+                        Most a kérésed szerint: CSAK USER-nek. */}
+                    {loggedIn && !isAdmin && (
                         <Link
                             component={RouterLink}
                             to="/my-movies"
@@ -66,13 +59,16 @@ export default function Navbar() {
                             Saját lista
                         </Link>
                     )}
+
+                    {/* Regisztráció külön menüpontot NEM raktunk,
+                        majd a Login oldalon lesz link. */}
                 </Stack>
 
                 <Box sx={{ flexGrow: 0 }} />
 
                 {loggedIn ? (
                     <Button color="inherit" onClick={logout}>
-                        Kijelentkezés
+                        Kijelentkezés ({user.username})
                     </Button>
                 ) : (
                     <Button color="inherit" component={RouterLink} to="/login">

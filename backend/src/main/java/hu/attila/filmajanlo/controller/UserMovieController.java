@@ -1,86 +1,92 @@
 package hu.attila.filmajanlo.controller;
 
-import hu.attila.filmajanlo.model.Movie;
 import hu.attila.filmajanlo.model.User;
 import hu.attila.filmajanlo.model.UserMovie;
-import hu.attila.filmajanlo.repository.MovieRepository;
 import hu.attila.filmajanlo.repository.UserMovieRepository;
 import hu.attila.filmajanlo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/user/movies")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class UserMovieController {
 
-    private final UserRepository userRepository;
-    private final MovieRepository movieRepository;
     private final UserMovieRepository userMovieRepository;
+    private final UserRepository userRepository;
 
-    // Saját filmek lekérése
+    // --- Saját filmek lekérése + szűrők ---
     @GetMapping
-    public ResponseEntity<List<Movie>> getMyMovies(Authentication auth) {
-        User user = userRepository.findByUsername(auth.getName())
-                .orElseThrow();
+    public List<UserMovie> getMyMovies(
+            @AuthenticationPrincipal UserDetails details,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String director,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Integer yearFrom,
+            @RequestParam(required = false) Integer yearTo
+    ) {
+        User user = userRepository.findByUsername(details.getUsername()).orElseThrow();
+        List<UserMovie> movies = userMovieRepository.findByOwner(user);
 
-        List<Movie> movies = userMovieRepository.findByUser(user).stream()
-                .map(UserMovie::getMovie)
-                .toList();
-
-        return ResponseEntity.ok(movies);
+        return movies.stream()
+                .filter(m -> search == null || m.getTitle().toLowerCase().contains(search.toLowerCase()))
+                .filter(m -> director == null || (m.getDirector() != null &&
+                        m.getDirector().toLowerCase().contains(director.toLowerCase())))
+                .filter(m -> category == null || (m.getCategory() != null &&
+                        m.getCategory().getName().equalsIgnoreCase(category)))
+                .filter(m -> yearFrom == null || m.getReleaseYear() >= yearFrom)
+                .filter(m -> yearTo == null || m.getReleaseYear() <= yearTo)
+                .collect(Collectors.toList());
     }
 
-    // Film hozzáadása saját listához
-    @PostMapping("/{movieId}")
-    public ResponseEntity<?> addToMyMovies(
-            @PathVariable Long movieId,
-            Authentication auth
-    ) {
-        User user = userRepository.findByUsername(auth.getName())
-                .orElseThrow();
-
-        Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
-
-        if (userMovieRepository.existsByUserAndMovie(user, movie)) {
-            return ResponseEntity.badRequest().body("Movie already in your list");
-        }
-
-        UserMovie um = new UserMovie();
-        um.setUser(user);
-        um.setMovie(movie);
-        userMovieRepository.save(um);
-
-        return ResponseEntity.ok("Movie added to your list");
+    // --- Saját film hozzáadása ---
+    @PostMapping
+    public UserMovie addMovie(@AuthenticationPrincipal UserDetails details, @RequestBody UserMovie movie) {
+        User user = userRepository.findByUsername(details.getUsername()).orElseThrow();
+        movie.setOwner(user);
+        return userMovieRepository.save(movie);
     }
 
-    // Film törlése saját listából
-    @DeleteMapping("/{movieId}")
-    public ResponseEntity<?> removeFromMyMovies(
-            @PathVariable Long movieId,
-            Authentication auth
+    // --- Saját film szerkesztése ---
+    @PutMapping("/{id}")
+    public UserMovie updateMovie(
+            @AuthenticationPrincipal UserDetails details,
+            @PathVariable Long id,
+            @RequestBody UserMovie updated
     ) {
-        User user = userRepository.findByUsername(auth.getName())
-                .orElseThrow();
+        User user = userRepository.findByUsername(details.getUsername()).orElseThrow();
+        UserMovie existing = userMovieRepository.findById(id).orElseThrow();
 
-        Movie movie = movieRepository.findById(movieId)
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found"));
+        if (!existing.getOwner().getId().equals(user.getId()))
+            throw new RuntimeException("Not your movie!");
 
-        UserMovie um = userMovieRepository.findByUserAndMovie(user, movie)
-                .orElse(null);
+        existing.setTitle(updated.getTitle());
+        existing.setDirector(updated.getDirector());
+        existing.setReleaseYear(updated.getReleaseYear());
+        existing.setGenre(updated.getGenre());
+        existing.setRating(updated.getRating());
+        existing.setDescription(updated.getDescription());
+        existing.setPosterUrl(updated.getPosterUrl());
+        existing.setCategory(updated.getCategory());
 
-        if (um == null) {
-            return ResponseEntity.badRequest().body("Movie not in your list");
-        }
+        return userMovieRepository.save(existing);
+    }
 
-        userMovieRepository.delete(um);
-        return ResponseEntity.ok("Movie removed from your list");
+    // --- Saját film törlése ---
+    @DeleteMapping("/{id}")
+    public void deleteMovie(@AuthenticationPrincipal UserDetails details, @PathVariable Long id) {
+        User user = userRepository.findByUsername(details.getUsername()).orElseThrow();
+        UserMovie existing = userMovieRepository.findById(id).orElseThrow();
+
+        if (!existing.getOwner().getId().equals(user.getId()))
+            throw new RuntimeException("Not your movie!");
+
+        userMovieRepository.delete(existing);
     }
 }

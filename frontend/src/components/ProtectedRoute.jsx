@@ -1,7 +1,12 @@
 import { Navigate } from "react-router-dom";
-import { auth } from "../api/client";
+import { auth, getUserRole } from "../api/client";
 
-export default function ProtectedRoute({ children }) {
-    const loggedIn = !!auth.get();
-    return loggedIn ? children : <Navigate to="/login" replace />;
+export default function ProtectedRoute({ children, adminOnly = false }) {
+    const loggedIn = !!auth.getToken();
+    const role = getUserRole();
+
+    if (!loggedIn) return <Navigate to="/login" />;
+    if (adminOnly && role !== "ADMIN") return <Navigate to="/" />;
+
+    return children;
 }

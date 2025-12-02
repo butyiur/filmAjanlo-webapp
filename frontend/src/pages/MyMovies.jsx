@@ -1,61 +1,230 @@
-import { useEffect, useState } from "react";
-import API from "../api/client";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/client";
 import {
-    Box, Grid, Card, CardContent, CardMedia, Typography, Button
+    Box,
+    Grid,
+    Card,
+    CardContent,
+    CardMedia,
+    CardActions,
+    Typography,
+    TextField,
+    Select,
+    MenuItem,
+    Button,
+    Stack,
+    InputLabel,
+    FormControl,
+    Pagination,
 } from "@mui/material";
 
-export default function MyMovies() {
-    const [movies, setMovies] = useState([]);
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
+export default function MyMovies() {
+    const navigate = useNavigate();
+
+    // --- állapotok ---
+    const [movies, setMovies] = useState([]);
+    const [categories, setCategories] = useState([]);
+
+    const [search, setSearch] = useState("");
+    const [director, setDirector] = useState("");
+    const [category, setCategory] = useState("");
+    const [yearFrom, setYearFrom] = useState("");
+    const [yearTo, setYearTo] = useState("");
+
+    const [page, setPage] = useState(1);
+    const [pageSize] = useState(12);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const loaded = useRef(false); // megakadályozza a duplahívást
+
+    // --- filmek betöltése ---
     const loadMovies = async () => {
         try {
-            const res = await API.get("/user/movies");
-            setMovies(res.data);
+            // csak a kitöltött filterek kerüljenek az API query-be
+            const params = {};
+            if (search) params.search = search;
+            if (director) params.director = director;
+            if (category) params.category = category;
+            if (yearFrom) params.yearFrom = yearFrom;
+            if (yearTo) params.yearTo = yearTo;
+            params.page = page - 1;
+            params.size = pageSize;
+
+            const res = await api.get("/user/movies", { params });
+
+            // backend lehet, hogy sima listát ad vissza, vagy paginál
+            const data = Array.isArray(res.data)
+                ? res.data
+                : res.data.content || [];
+
+            setMovies(data);
+            setTotalPages(res.data.totalPages ?? 1);
         } catch (err) {
-            console.error(err);
+            console.error("❌ Saját filmek betöltése sikertelen:", err);
         }
     };
 
-    const removeMovie = async (id) => {
+    // --- kategóriák betöltése ---
+    const loadCategories = async () => {
         try {
-            await API.delete(`/user/movies/${id}`);
-            loadMovies();  // újratöltés törlés után
+            const res = await api.get("/categories");
+            setCategories(res.data);
         } catch (err) {
-            console.error(err);
+            console.error("❌ Kategóriák betöltése sikertelen:", err);
         }
     };
 
+    // csak egyszer fusson le
     useEffect(() => {
+        if (loaded.current) return;
+        loaded.current = true;
+        loadCategories();
         loadMovies();
     }, []);
 
+    // ha bármely filter vagy oldalváltás történik, újratölt
+    useEffect(() => {
+        loadMovies();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search, director, category, yearFrom, yearTo, page]);
+
+    // --- törlés ---
+    const handleDelete = async (id) => {
+        if (!window.confirm("Biztosan törlöd ezt a filmet?")) return;
+        try {
+            await api.delete(`/user/movies/${id}`);
+            loadMovies();
+        } catch (err) {
+            console.error("❌ Saját film törlése sikertelen:", err);
+        }
+    };
+
     return (
-        <Box p={4}>
-            <Typography variant="h4" mb={3}>My Movies</Typography>
-            <Grid container spacing={3}>
-                {movies.map(movie => (
-                    <Grid item xs={12} sm={6} md={4} lg={3} key={movie.id}>
+        <Box sx={{ p: 3 }}>
+            {/* ---------------------------------------
+          SZŰRŐK + ÚJ FILM GOMB
+      ---------------------------------------- */}
+            <Stack
+                direction="row"
+                spacing={2}
+                sx={{ mb: 3, flexWrap: "wrap" }}
+                alignItems="center"
+            >
+                <TextField
+                    label="Cím keresése"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+
+                <TextField
+                    label="Rendező"
+                    value={director}
+                    onChange={(e) => setDirector(e.target.value)}
+                />
+
+                <FormControl sx={{ minWidth: 160 }}>
+                    <InputLabel>Kategória</InputLabel>
+                    <Select
+                        value={category}
+                        label="Kategória"
+                        onChange={(e) => setCategory(e.target.value)}
+                    >
+                        <MenuItem value="">(mind)</MenuItem>
+                        {categories.map((c) => (
+                            <MenuItem key={c.id} value={c.name}>
+                                {c.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+
+                <TextField
+                    label="Év tól"
+                    value={yearFrom}
+                    onChange={(e) => setYearFrom(e.target.value)}
+                    sx={{ width: 100 }}
+                />
+                <TextField
+                    label="Év ig"
+                    value={yearTo}
+                    onChange={(e) => setYearTo(e.target.value)}
+                    sx={{ width: 100 }}
+                />
+
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => navigate("/my-movies/new")}
+                >
+                    Új film
+                </Button>
+            </Stack>
+
+            {/* ---------------------------------------
+          FILM KÁRTYÁK
+      ---------------------------------------- */}
+            <Grid container spacing={2}>
+                {movies.length === 0 && (
+                    <Typography variant="body1" sx={{ p: 2 }}>
+                        Nincs találat.
+                    </Typography>
+                )}
+
+                {movies.map((m) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={m.id}>
                         <Card>
                             <CardMedia
                                 component="img"
-                                height="300"
-                                image={movie.posterUrl || "https://placehold.co/300x450?text=No+Image"}
+                                height="220"
+                                image={m.posterUrl || "/react.svg"}
+                                alt={m.title}
                             />
                             <CardContent>
-                                <Typography variant="h6">{movie.title}</Typography>
-                                <Button
-                                    variant="outlined"
-                                    color="error"
-                                    sx={{ mt: 1 }}
-                                    onClick={() => removeMovie(movie.id)}
-                                >
-                                    Remove
-                                </Button>
+                                <Typography variant="h6">{m.title}</Typography>
+                                <Typography variant="body2">{m.director}</Typography>
+                                <Typography variant="body2">
+                                    {m.releaseYear} • {m.genre}
+                                </Typography>
+                                <Typography variant="body2">
+                                    Értékelés: {m.rating ?? "N/A"}
+                                </Typography>
                             </CardContent>
+
+                            <CardActions>
+                                <Button
+                                    size="small"
+                                    startIcon={<EditIcon />}
+                                    onClick={() => navigate(`/my-movies/${m.id}/edit`)}
+                                >
+                                    Szerkesztés
+                                </Button>
+                                <Button
+                                    size="small"
+                                    color="error"
+                                    startIcon={<DeleteIcon />}
+                                    onClick={() => handleDelete(m.id)}
+                                >
+                                    Törlés
+                                </Button>
+                            </CardActions>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
+
+            {/* LAPOZÁS */}
+            <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
+                <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(e, v) => setPage(v)}
+                />
+            </Stack>
         </Box>
     );
 }

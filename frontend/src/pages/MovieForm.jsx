@@ -26,8 +26,11 @@ export default function MovieForm() {
     const [error, setError] = useState("");
 
     useEffect(() => {
+        // IMPORTANT: NINCS /api
         api.get("/categories").then(r => setCategories(r.data));
+
         if (id) {
+            // IMPORTANT: NINCS /api
             api.get(`/movies/${id}`).then(r => {
                 const m = r.data;
                 setForm({
@@ -68,8 +71,13 @@ export default function MovieForm() {
         };
 
         try {
-            if (id) await api.put(`/movies/${id}`, payload);
-            else     await api.post("/movies", payload);
+            if (id) {
+                // IMPORTANT: NINCS /api
+                await api.put(`/movies/${id}`, payload);
+            } else {
+                // IMPORTANT: NINCS /api
+                await api.post("/movies", payload);
+            }
             navigate("/");
         } catch (err) {
             console.error(err);

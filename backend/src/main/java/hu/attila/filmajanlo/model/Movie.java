@@ -29,9 +29,4 @@ public class Movie {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-
-    // --- ÚJ: a film tulajdonosa (a user) ---
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User owner;
 }

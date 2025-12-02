@@ -12,27 +12,39 @@ export default function Login() {
         e.preventDefault();
         setErr("");
 
-        const token = btoa(`${u}:${p}`);
-
         try {
-            // Valódi login a backend felé
+            // 1) backend login (felhasználó/jelszó ellenőrzés)
             await api.post("/auth/login", {
                 username: u,
                 password: p
             });
 
-            // Ha sikeres → token mentése
-            auth.set(token);
+            // 2) ideiglenesen beállítjuk a Tokent,
+            //    hogy a /auth/me hívás már Auth-tal menjen
+            const tempToken = btoa(`${u}:${p}`);
+            localStorage.setItem("basicAuth", tempToken);
+
+            // 3) lekérdezzük ki vagyunk
+            const me = await api.get("/auth/me");
+
+            const role = me.data.role; // "ADMIN" vagy "USER"
+
+            // 4) most már normálisan elmentjük mindent
+            auth.setLogin(u, p, role);
 
             navigate("/");
         } catch (error) {
+            console.error(error);
             auth.logout();
             setErr("Hibás felhasználónév vagy jelszó.");
         }
     };
 
     return (
-        <form onSubmit={submit} style={{ padding: 20, display: "grid", gap: 8, maxWidth: 320 }}>
+        <form
+            onSubmit={submit}
+            style={{ padding: 20, display: "grid", gap: 8, maxWidth: 320 }}
+        >
             <h2>Bejelentkezés</h2>
             {err && <div style={{ color: "red" }}>{err}</div>}
 
@@ -50,6 +62,8 @@ export default function Login() {
             />
 
             <button type="submit">Belépés</button>
+
+            {/* Később ide jöhet egy "Regisztráció" link is */}
         </form>
     );
 }
