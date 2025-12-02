@@ -60,6 +60,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN") // csak admin adhat hozzá
                 .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")  // csak admin módosíthat
                 .requestMatchers(HttpMethod.DELETE, "/api/movies/**").hasRole("ADMIN") // csak admin törölhet
+                .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN") //csak admin adhat hozzá kategóriát
+
 
                 // Kategóriák: GET bárki, módosítás ADMIN
                 .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()

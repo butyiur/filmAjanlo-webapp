@@ -1,6 +1,7 @@
 package hu.attila.filmajanlo.controller;
 
 import hu.attila.filmajanlo.model.Movie;
+import hu.attila.filmajanlo.repository.MovieRepository;
 import hu.attila.filmajanlo.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,7 @@ public class MovieController {
     public List<Movie> getMoviesByCategory(@PathVariable Long categoryId) {
         return movieService.findByCategory(categoryId);
     }
+
 
     // CREATE
     @PostMapping

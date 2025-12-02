@@ -16,6 +16,7 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByCategoryId(Long categoryId);
 
 
+
     @Query(value = """
 SELECT m FROM Movie m
 WHERE (:title IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :title, '%')))

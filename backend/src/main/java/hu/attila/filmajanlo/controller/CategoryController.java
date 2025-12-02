@@ -2,36 +2,40 @@ package hu.attila.filmajanlo.controller;
 
 import hu.attila.filmajanlo.model.Category;
 import hu.attila.filmajanlo.service.CategoryService;
+import hu.attila.filmajanlo.service.CategoryServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/categories")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
-    // List all categories
+    // --- Összes kategória lekérése ---
     @GetMapping
     public List<Category> getAllCategories() {
         return categoryService.findAll();
     }
 
-    // Get by ID
+    // --- Egy kategória lekérése ---
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Long id) {
+    public Category getCategory(@PathVariable Long id) {
         return categoryService.findById(id);
     }
 
-    // Create category
+    // --- Új kategória létrehozása (ADMIN) ---
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
+    public Category addCategory(@RequestBody Category category) {
         return categoryService.save(category);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable Long id) {
+        categoryService.delete(id);
     }
 }

@@ -28,6 +28,26 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Category save(Category category) {
+        // --- Duplikált név ellenőrzés ---
+        boolean exists = categoryRepository.findAll().stream()
+                .anyMatch(c -> c.getName().equalsIgnoreCase(category.getName()));
+
+        if (exists) {
+            throw new RuntimeException("Category with this name already exists: " + category.getName());
+        }
+
         return categoryRepository.save(category);
+    }
+
+    @Override
+    public void delete(Long id) {
+        var category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        // --- Az adott kategóriához tartozó filmek leválasztása ---
+        category.getMovies().forEach(movie -> movie.setCategory(null));
+
+        // --- Ezután törölhetjük a kategóriát ---
+        categoryRepository.delete(category);
     }
 }
