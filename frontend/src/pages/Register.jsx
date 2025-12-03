@@ -17,9 +17,8 @@ export default function Register() {
         try {
             await api.post("/auth/register", {
                 username,
-                passwordHash: password, // backend így várja!
+                passwordHash: password,
             });
-
             setSuccess("Sikeres regisztráció!");
             setTimeout(() => navigate("/login"), 1000);
         } catch (err) {
@@ -30,23 +29,10 @@ export default function Register() {
     return (
         <form onSubmit={submit} style={{ padding: 20, display: "grid", gap: 8, maxWidth: 320 }}>
             <h2>Regisztráció</h2>
-
             {error && <div style={{ color: "red" }}>{error}</div>}
             {success && <div style={{ color: "green" }}>{success}</div>}
-
-            <input
-                placeholder="Felhasználónév"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
-
-            <input
-                placeholder="Jelszó"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-
+            <input placeholder="Felhasználónév" value={username} onChange={(e) => setUsername(e.target.value)} />
+            <input placeholder="Jelszó" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <button type="submit">Regisztráció</button>
         </form>
     );

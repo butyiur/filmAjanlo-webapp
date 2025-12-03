@@ -1,0 +1,3 @@
+2025-12-03 02:39:58.493172+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "POSTER_URL CHARACTER VARYING(255)": "'https://www.google.com/imgres?q=star%20wars%20img&imgurl=https%3A%2F%2Fimages.u... (473)"; SQL statement:
+update movie set category_id=?,description=?,director=?,genre=?,poster_url=?,rating=?,release_year=?,title=? where id=? [22001-240]
