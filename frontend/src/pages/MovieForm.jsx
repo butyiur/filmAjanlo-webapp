@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/client";
-import {
-    Container, Paper, Stack, TextField, FormControl, InputLabel, Select, MenuItem,
-    Button, Typography
-} from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 
@@ -26,11 +22,9 @@ export default function MovieForm() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        // IMPORTANT: NINCS /api
         api.get("/categories").then(r => setCategories(r.data));
 
         if (id) {
-            // IMPORTANT: NINCS /api
             api.get(`/movies/${id}`).then(r => {
                 const m = r.data;
                 setForm({
@@ -53,7 +47,6 @@ export default function MovieForm() {
         e.preventDefault();
         setError("");
 
-        // Alap URL validáció (ha meg van adva, http/https-sel kezdődjön)
         if (form.posterUrl && !/^https?:\/\//i.test(form.posterUrl)) {
             setError("A plakát URL-nek http:// vagy https:// kezdetűnek kell lennie.");
             return;
@@ -72,123 +65,124 @@ export default function MovieForm() {
 
         try {
             if (id) {
-                // IMPORTANT: NINCS /api
                 await api.put(`/movies/${id}`, payload);
             } else {
-                // IMPORTANT: NINCS /api
                 await api.post("/movies", payload);
             }
             navigate("/");
         } catch (err) {
             console.error(err);
-            setError("Mentés sikertelen. Ellenőrizd a mezőket.");
+            setError("Mentés sikertelen.");
         }
     };
 
     return (
-        <Container maxWidth="sm" sx={{ py: 3 }}>
-            <Paper sx={{ p: 3 }}>
-                <Typography variant="h5" sx={{ mb: 2 }}>
-                    {id ? "Film szerkesztése" : "Új film"}
-                </Typography>
+        <div className="neo-container">
+            <div className="neo-card">
 
-                {error && <Typography color="error" sx={{ mb: 2 }}>{error}</Typography>}
+                <h2 className="neo-title">
+                    {id ? "🎬 Film szerkesztése" : "🎬 Új film hozzáadása"}
+                </h2>
 
-                <form onSubmit={submit}>
-                    <Stack spacing={2}>
-                        <TextField
-                            label="Cím"
-                            value={form.title}
-                            onChange={e => change("title", e.target.value)}
-                            required
-                        />
+                {error && (
+                    <div className="neo-error">{error}</div>
+                )}
 
-                        <TextField
-                            label="Rendező"
-                            value={form.director}
-                            onChange={e => change("director", e.target.value)}
-                        />
+                <form onSubmit={submit} className="neo-form">
 
-                        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                            <TextField
-                                label="Megjelenés éve"
-                                type="number"
-                                value={form.releaseYear}
-                                onChange={e => change("releaseYear", e.target.value)}
-                                sx={{ flex: 1 }}
-                            />
-                            <TextField
-                                label="Műfaj"
-                                value={form.genre}
-                                onChange={e => change("genre", e.target.value)}
-                                sx={{ flex: 1 }}
-                            />
-                        </Stack>
+                    <input
+                        className="neo-input"
+                        placeholder="Cím *"
+                        value={form.title}
+                        onChange={(e) => change("title", e.target.value)}
+                        required
+                    />
 
-                        <TextField
-                            label="Értékelés (1–10)"
+                    <input
+                        className="neo-input"
+                        placeholder="Rendező"
+                        value={form.director}
+                        onChange={(e) => change("director", e.target.value)}
+                    />
+
+                    <div className="neo-row">
+                        <input
+                            className="neo-input"
                             type="number"
-                            inputProps={{ step: "0.1", min: 0, max: 10 }}
-                            value={form.rating}
-                            onChange={e => change("rating", e.target.value)}
+                            placeholder="Megjelenés éve"
+                            value={form.releaseYear}
+                            onChange={(e) => change("releaseYear", e.target.value)}
                         />
 
-                        <TextField
-                            label="Leírás"
-                            multiline
-                            minRows={3}
-                            value={form.description}
-                            onChange={e => change("description", e.target.value)}
+                        <input
+                            className="neo-input"
+                            placeholder="Műfaj"
+                            value={form.genre}
+                            onChange={(e) => change("genre", e.target.value)}
                         />
+                    </div>
 
-                        {/* Képlink mező + élő előnézet */}
-                        <TextField
-                            label="Plakát URL (http/https)"
-                            type="url"
-                            value={form.posterUrl}
-                            onChange={e => change("posterUrl", e.target.value)}
-                            helperText="Illeszthetsz be külső képlinket (pl. TMDB/IMDb/Imgur/Cloudinary)."
+                    <input
+                        className="neo-input"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        max="10"
+                        placeholder="Értékelés (1-10)"
+                        value={form.rating}
+                        onChange={(e) => change("rating", e.target.value)}
+                    />
+
+                    <textarea
+                        className="neo-textarea"
+                        placeholder="Leírás"
+                        value={form.description}
+                        onChange={(e) => change("description", e.target.value)}
+                    ></textarea>
+
+                    <input
+                        className="neo-input"
+                        placeholder="Plakát URL (http/https)"
+                        value={form.posterUrl}
+                        onChange={(e) => change("posterUrl", e.target.value)}
+                    />
+
+                    {form.posterUrl && (
+                        <img
+                            src={form.posterUrl}
+                            alt="preview"
+                            className="neo-preview"
+                            onError={(e) => e.currentTarget.style.display = "none"}
                         />
+                    )}
 
-                        {form.posterUrl && (
-                            <img
-                                src={form.posterUrl}
-                                alt="Előnézet"
-                                onError={(e) => { e.currentTarget.style.display = "none"; }}
-                                style={{ width: "100%", maxHeight: 260, objectFit: "cover", borderRadius: 8 }}
-                            />
-                        )}
+                    <select
+                        className="neo-select"
+                        value={form.categoryId}
+                        onChange={(e) => change("categoryId", e.target.value)}
+                    >
+                        <option value="">-- nincs kategória --</option>
+                        {categories.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                    </select>
 
-                        <FormControl>
-                            <InputLabel>Kategória</InputLabel>
-                            <Select
-                                label="Kategória"
-                                value={form.categoryId}
-                                onChange={e => change("categoryId", e.target.value)}
-                            >
-                                <MenuItem value="">-- kategória nélkül --</MenuItem>
-                                {categories.map(c => (
-                                    <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                    <div className="neo-button-row">
+                        <button
+                            type="button"
+                            className="neo-btn cancel"
+                            onClick={() => navigate("/")}
+                        >
+                            <CancelIcon /> Mégse
+                        </button>
 
-                        <Stack direction="row" spacing={2} justifyContent="flex-end">
-                            <Button
-                                type="button"
-                                variant="outlined"
-                                startIcon={<CancelIcon />}
-                                onClick={() => navigate("/")}
-                            >
-                                Mégse
-                            </Button>
-                            <Button type="submit" variant="contained" startIcon={<SaveIcon />}>
-                                {id ? "Mentés" : "Hozzáadás"}
-                            </Button>
-                        </Stack>
-                    </Stack>
+                        <button type="submit" className="neo-btn save">
+                            <SaveIcon /> {id ? "Mentés" : "Hozzáadás"}
+                        </button>
+                    </div>
+
                 </form>
-            </Paper>
-        </Container>
+            </div>
+        </div>
     );
 }

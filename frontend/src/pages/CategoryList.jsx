@@ -1,22 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api, { auth } from "../api/client";
-import {
-    Box,
-    Typography,
-    Button,
-    Stack,
-    TextField,
-    Paper,
-    List,
-    ListItem,
-    ListItemText,
-    IconButton,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function CategoryList() {
     const [categories, setCategories] = useState([]);
@@ -29,15 +13,15 @@ export default function CategoryList() {
     const user = auth.getUser();
     const isAdmin = user?.role === "ADMIN";
 
-    // --- kategóriák betöltése ---
     const loadCategories = async () => {
         try {
             const res = await api.get("/categories");
-            // kiszűrjük az esetleges duplikáltakat (név alapján)
-            const unique = Array.from(new Map(res.data.map(c => [c.name.toLowerCase(), c])).values());
+            const unique = Array.from(
+                new Map(res.data.map((c) => [c.name.toLowerCase(), c])).values()
+            );
             setCategories(unique);
         } catch {
-            setError("❌ Hiba történt a kategóriák betöltésekor");
+            setError("Hiba történt a kategóriák betöltésekor.");
         } finally {
             setLoading(false);
         }
@@ -47,7 +31,6 @@ export default function CategoryList() {
         loadCategories();
     }, []);
 
-    // --- új kategória mentése ---
     const handleAddCategory = async () => {
         const name = newName.trim();
         if (!name) return alert("Adj meg egy kategórianemet!");
@@ -64,113 +47,112 @@ export default function CategoryList() {
             setAdding(false);
             loadCategories();
         } catch (err) {
-            console.error("❌ Hiba a kategória hozzáadásakor:", err);
             alert("Hiba történt a mentéskor!");
         }
     };
 
-    // --- kategória törlése ---
     const handleDelete = async (id) => {
         if (!window.confirm("Biztosan törlöd ezt a kategóriát?")) return;
+
         try {
             await api.delete(`/categories/${id}`);
             loadCategories();
-        } catch (err) {
-            console.error("❌ Hiba a kategória törlésekor:", err);
+        } catch {
             alert("A törlés nem sikerült!");
         }
     };
 
-    // --- kattintás kategóriára (felhasználónál szűrés) ---
     const handleCategoryClick = (categoryId) => {
         if (!isAdmin) navigate(`/?categoryId=${categoryId}`);
     };
 
-    if (loading) return <Box sx={{ p: 3 }}>Betöltés…</Box>;
-    if (error) return <Box sx={{ p: 3, color: "red" }}>{error}</Box>;
+    if (loading) return <div className="page neon-page">Betöltés…</div>;
+    if (error) return <div className="page neon-page" style={{ color: "red" }}>{error}</div>;
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{ mb: 2 }}
-            >
-                <Typography variant="h5">Kategóriák</Typography>
-                {isAdmin && !adding && (
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => setAdding(true)}
-                    >
-                        Új kategória
-                    </Button>
-                )}
-            </Stack>
+        <div className="page neon-page">
+            <h2 className="page-title">Kategóriák</h2>
 
+            {/* ÚJ KATEGÓRIA FORM */}
             {isAdmin && adding && (
-                <Paper sx={{ p: 2, mb: 3 }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                        <TextField
-                            label="Kategória neve"
-                            value={newName}
-                            onChange={(e) => setNewName(e.target.value)}
-                            size="small"
-                        />
-                        <Button
-                            variant="contained"
-                            startIcon={<SaveIcon />}
-                            onClick={handleAddCategory}
-                        >
-                            Mentés
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            startIcon={<CancelIcon />}
-                            onClick={() => {
-                                setAdding(false);
-                                setNewName("");
-                            }}
-                        >
-                            Mégse
-                        </Button>
-                    </Stack>
-                </Paper>
+                <div className="neo-card" style={{ marginBottom: 20 }}>
+                    <div className="neo-card-inner">
+                        <div style={{ display: "flex", gap: 12 }}>
+                            <input
+                                className="neo-input"
+                                placeholder="Kategória neve"
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                            />
+
+                            <button className="neo-btn save" onClick={handleAddCategory}>
+                                Mentés
+                            </button>
+
+                            <button
+                                className="neo-btn cancel"
+                                onClick={() => {
+                                    setAdding(false);
+                                    setNewName("");
+                                }}
+                            >
+                                Mégse
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
-            <Paper>
-                <List>
-                    {categories.map((cat) => (
-                        <ListItem
-                            key={cat.id}
-                            secondaryAction={
-                                isAdmin && (
-                                    <IconButton
-                                        edge="end"
-                                        color="error"
+            {/* KATEGÓRIÁK LISTÁJA */}
+            <div className="neo-card">
+                <div className="neo-card-inner">
+                    <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between" }}>
+                        <span style={{ color: "#aab" }}>
+                            Összes kategória: <b>{categories.length}</b>
+                        </span>
+
+                        {isAdmin && (
+                            <button
+                                className="neo-btn save"
+                                onClick={() => setAdding(true)}
+                            >
+                                Új kategória
+                            </button>
+                        )}
+                    </div>
+
+                    <ul style={{ listStyle: "none", padding: 0 }}>
+                        {categories.map((cat) => (
+                            <li
+                                key={cat.id}
+                                className="neo-list-item"
+                                onClick={() => handleCategoryClick(cat.id)}
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    cursor: !isAdmin ? "pointer" : "default",
+                                }}
+                            >
+                                <span>{cat.name}</span>
+
+                                {isAdmin && (
+                                    <button
+                                        className="neo-btn delete"
                                         onClick={() => handleDelete(cat.id)}
                                     >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                )
-                            }
-                        >
-                            <ListItemText
-                                primary={cat.name}
-                                onClick={() => handleCategoryClick(cat.id)}
-                                primaryTypographyProps={{
-                                    fontWeight: !isAdmin ? "500" : "400",
-                                    sx: {
-                                        cursor: !isAdmin ? "pointer" : "default",
-                                    },
-                                }}
-                            />
-                        </ListItem>
-                    ))}
-                </List>
-            </Paper>
-        </Box>
+                                        Törlés
+                                    </button>
+                                )}
+                            </li>
+                        ))}
+
+                        {categories.length === 0 && (
+                            <li style={{ padding: 14, opacity: 0.7 }}>Nincsenek kategóriák.</li>
+                        )}
+                    </ul>
+                </div>
+            </div>
+        </div>
     );
 }

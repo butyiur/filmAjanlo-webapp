@@ -16,7 +16,7 @@ export default function Navbar() {
 
     const logout = () => {
         auth.logout();
-        navigate("/");
+        navigate("/login");
     };
 
     return (
@@ -26,53 +26,22 @@ export default function Navbar() {
                     Filmajánló
                 </Typography>
 
-                <Stack direction="row" spacing={2}>
-                    {/* Filmek: mindenkinek */}
-                    <Link
-                        component={RouterLink}
-                        to="/"
-                        color="inherit"
-                        underline="hover"
-                    >
-                        Filmek
-                    </Link>
+                <Stack direction="row" spacing={3}>
+                    <Link component={RouterLink} to="/" color="inherit">Filmek</Link>
+                    <Link component={RouterLink} to="/categories" color="inherit">Kategóriák</Link>
 
-                    {/* Kategóriák: mindenkinek */}
-                    <Link
-                        component={RouterLink}
-                        to="/categories"
-                        color="inherit"
-                        underline="hover"
-                    >
-                        Kategóriák
-                    </Link>
-
-                    {/* Saját lista: csak USER-nek */}
                     {loggedIn && !isAdmin && (
-                        <Link
-                            component={RouterLink}
-                            to="/my-movies"
-                            color="inherit"
-                            underline="hover"
-                        >
+                        <Link component={RouterLink} to="/my-movies" color="inherit">
                             Saját lista
                         </Link>
                     )}
 
-                    {/* ADMIN - Felhasználók menüpont */}
                     {isAdmin && (
-                        <Link
-                            component={RouterLink}
-                            to="/admin/users"
-                            color="inherit"
-                            underline="hover"
-                        >
+                        <Link component={RouterLink} to="/admin/users" color="inherit">
                             Felhasználók
                         </Link>
                     )}
                 </Stack>
-
-                <Box sx={{ flexGrow: 0 }} />
 
                 {loggedIn ? (
                     <Button color="inherit" onClick={logout}>

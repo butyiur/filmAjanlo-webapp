@@ -1,68 +1,370 @@
+/* ============================================
+   🌌 GLOBAL CYBER-NEO THEME
+   ============================================ */
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  --bg-main: #05060d;
+  --bg-card: #0d0f17;
+  --bg-soft: #131720;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --accent-cyan: #00eaff;
+  --accent-pink: #ff4fd8;
+  --accent-purple: #7b5cff;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  --text-primary: #e8faff;
+  --text-secondary: #a0aec0;
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --radius: 18px;
+
+  --shadow-out: 8px 8px 15px rgba(0,0,0,0.65),
+  -6px -6px 12px rgba(255,255,255,0.04),
+  0 0 15px rgba(0,255,255,0.18);
+
+  --shadow-in: inset 4px 4px 8px rgba(0,0,0,0.7),
+  inset -3px -3px 6px rgba(255,255,255,0.06);
 }
 
 body {
   margin: 0;
+  background:
+          radial-gradient(circle at top left, rgba(0,238,255,0.16), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(255,77,204,0.15), transparent 60%),
+          #05060d;
+  color: var(--text-primary);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+/* ============================================
+   🌌 GLOBAL CYBER-NEO THEME
+   ============================================ */
+
+:root {
+  --bg-main: #05060d;
+  --bg-card: #0d0f17;
+  --bg-soft: #131720;
+
+  --accent-cyan: #00eaff;
+  --accent-pink: #ff4fd8;
+  --accent-purple: #7b5cff;
+
+  --text-primary: #e8faff;
+  --text-secondary: #a0aec0;
+
+  --radius: 18px;
+
+  --shadow-out: 8px 8px 15px rgba(0,0,0,0.65),
+  -6px -6px 12px rgba(255,255,255,0.04),
+  0 0 15px rgba(0,255,255,0.18);
+
+  --shadow-in: inset 4px 4px 8px rgba(0,0,0,0.7),
+  inset -3px -3px 6px rgba(255,255,255,0.06);
+}
+
+body {
+  margin: 0;
+  background:
+          radial-gradient(circle at top left, rgba(0,238,255,0.16), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(255,77,204,0.15), transparent 60%),
+          #05060d;
+  color: var(--text-primary);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+
+/* ============================================
+   🌌 GLOBAL CYBER-NEO THEME
+   ============================================ */
+
+:root {
+  --bg-main: #05060d;
+  --bg-card: #0d0f17;
+  --bg-soft: #131720;
+
+  --accent-cyan: #00eaff;
+  --accent-pink: #ff4fd8;
+  --accent-purple: #7b5cff;
+
+  --text-primary: #e8faff;
+  --text-secondary: #a0aec0;
+
+  --radius: 18px;
+
+  --shadow-out: 8px 8px 15px rgba(0,0,0,0.65),
+  -6px -6px 12px rgba(255,255,255,0.04),
+  0 0 15px rgba(0,255,255,0.18);
+
+  --shadow-in: inset 4px 4px 8px rgba(0,0,0,0.7),
+  inset -3px -3px 6px rgba(255,255,255,0.06);
+}
+
+body {
+  margin: 0;
+  background:
+          radial-gradient(circle at top left, rgba(0,238,255,0.16), transparent 55%),
+          radial-gradient(circle at bottom right, rgba(255,77,204,0.15), transparent 60%),
+          #05060d;
+  color: var(--text-primary);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ============================================
+   📦 UNIVERSAL NEO CARD
+   ============================================ */
+.neo-card {
+  background: var(--bg-card);
+  padding: 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: var(--shadow-out);
+  position: relative;
+}
+
+/* ============================================
+   📘 NAVBAR CYBER STYLE
+   ============================================ */
+
+nav {
+  background: rgba(5,7,14,0.85);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  box-shadow: 0 0 12px rgba(0,255,255,0.15);
+}
+nav a {
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 0 12px;
+  transition: 0.2s;
+}
+
+nav a:hover {
+  color: var(--accent-cyan);
+  text-shadow: 0 0 6px var(--accent-cyan);
+}
+
+/* ============================================
+   👤 LOGIN / REGISTER
+   ============================================ */
+
+.auth-page {
+  max-width: 420px;
+  margin: 80px auto;
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.auth-card {
+  padding: 30px;
+  background: var(--bg-card);
+  border-radius: 22px;
+  box-shadow: var(--shadow-out);
+}
+
+
+/* ============================================
+   🧑‍💼 ADMIN USERS TABLE
+   ============================================ */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,255,255,0.2);
+}
+
+.admin-table thead {
+  background: rgba(0,20,40,0.65);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.admin-table tr:hover {
+  background: rgba(0,255,255,0.08);
+}
+
+.badge-admin {
+  background: linear-gradient(135deg, #ff77dd, #9f66ff);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.badge-user {
+  background: linear-gradient(145deg, #26ffe6, #009fff);
+  padding: 4px 12px;
+  border-radius: 12px;
+  color: #00222b;
+  font-weight: 700;
+}
+
+
+.category-item {
+  padding: 18px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-out);
+  border-radius: 18px;
+  margin-bottom: 12px;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: space-between;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+
+.movie-form {
+  max-width: 700px;
+  margin: 0 auto;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.neo-preview {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 0 15px rgba(0,255,255,0.25);
+  margin-bottom: 12px;
+}
+
+.movie-card {
+  border-radius: 18px !important;
+  box-shadow: 0 0 12px rgba(0,255,255,0.18) !important;
+  background: rgba(15,15,25,0.75) !important;
+  backdrop-filter: blur(6px);
+}
+
+
+/* ===== AUTH PAGE (Login + Register) ===== */
+
+.auth-page {
+  margin: 0 auto;
+  margin-top: 60px;
+  max-width: 420px;
+}
+
+.auth-card {
+  padding: 40px 34px;
+  border-radius: 22px;
+  background: #0c0f17;
+  backdrop-filter: blur(12px);
+
+  box-shadow:
+          4px 4px 14px #05060a,
+          -4px -4px 14px #141722,
+          0 0 25px rgba(0,255,255,0.25);
+}
+
+.auth-title {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 26px;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 14px var(--accent-cyan);
+}
+
+.auth-form {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-error, .auth-success {
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.auth-error {
+  background: rgba(255, 0, 0, 0.18);
+  border: 1px solid rgba(255, 40, 40, 0.4);
+  color: #ff8a8a;
+}
+
+.auth-success {
+  background: rgba(0,255,200,0.1);
+  border: 1px solid rgba(0,255,200,0.35);
+  color: #6fffea;
+}
+
+/* INPUTOK */
+.neo-input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: #1a1f2b;
+  color: #e0e0e0;
+
+  box-shadow:
+          inset 4px 4px 8px rgba(0,0,0,0.55),
+          inset -4px -4px 8px rgba(255,255,255,0.05),
+          0 0 10px rgba(0,255,255,0.18);
+}
+
+.neo-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow:
+          inset 2px 2px 4px rgba(0,0,0,0.7),
+          inset -2px -2px 4px rgba(255,255,255,0.08),
+          0 0 16px var(--accent-cyan);
+}
+
+/* GOMBOK */
+.neo-btn {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 14px;
+  border: none;
+  font-weight: bold;
+  font-size: 15px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+  transition: 0.2s;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.neo-btn.save {
+  background: linear-gradient(135deg, #00eaff, #00b7ff);
+  color: #000;
+  box-shadow: 0 0 16px rgba(0,255,255,0.35);
+}
+
+.neo-btn.save:hover {
+  box-shadow: 0 0 24px rgba(0,255,255,0.55);
+}
+
+.neo-btn.cancel {
+  background: #222;
+  color: #ddd;
+  box-shadow: 0 0 10px rgba(255,50,50,0.25);
+}
+
+.neo-btn.cancel:hover {
+  box-shadow: 0 0 16px rgba(255,50,50,0.35);
+}
+
+.auth-link-row {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.auth-link {
+  margin-left: 5px;
+  color: var(--accent-cyan);
+  font-weight: bold;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
 }

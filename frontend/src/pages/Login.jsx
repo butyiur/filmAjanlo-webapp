@@ -19,63 +19,57 @@ export default function Login() {
         }
 
         try {
-            const res = await api.post("/auth/login", {
-                username,
-                password,
-            });
+            const res = await api.post("/auth/login", { username, password });
 
             const token = res.data;
-
-            // token mentése
             localStorage.setItem("token", token);
 
-            // user adatainak lekérése
             const me = await api.get("/auth/me");
             auth.setLogin(token, me.data);
 
             navigate("/");
-        } catch (err) {
-            console.error(err);
+        } catch {
             setError("Hibás felhasználónév vagy jelszó!");
         }
     };
 
     return (
-        <form
-            onSubmit={submit}
-            style={{
-                padding: 20,
-                display: "grid",
-                gap: 8,
-                maxWidth: 320,
-                margin: "0 auto",
-            }}
-        >
-            <h2>Bejelentkezés</h2>
+        <div className="page auth-page">
+            <div className="neo-card auth-card">
+                <div className="neo-card-inner">
 
-            {error && <div style={{ color: "red" }}>{error}</div>}
+                    <h2 className="auth-title">🔐 Bejelentkezés</h2>
 
-            <input
-                placeholder="Felhasználónév"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-            />
+                    {error && <div className="auth-error">{error}</div>}
 
-            <input
-                placeholder="Jelszó"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+                    <form onSubmit={submit} className="auth-form">
+                        <input
+                            className="neo-input"
+                            placeholder="Felhasználónév"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                        />
 
-            <button type="submit">Bejelentkezés</button>
+                        <input
+                            className="neo-input"
+                            type="password"
+                            placeholder="Jelszó"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
 
-            <div style={{ marginTop: 10, fontSize: 14 }}>
-                Nincs még fiókod?{" "}
-                <Link to="/register" style={{ color: "#007bff" }}>
-                    Regisztráció
-                </Link>
+                        <button type="submit" className="neo-btn save">
+                            Bejelentkezés
+                        </button>
+                    </form>
+
+                    <div className="auth-link-row">
+                        <span>Nincs még fiókod?</span>
+                        <Link to="/register" className="auth-link">Regisztráció</Link>
+                    </div>
+
+                </div>
             </div>
-        </form>
+        </div>
     );
 }

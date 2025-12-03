@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar.jsx";
 
 import MovieList from "./pages/MovieList.jsx";
@@ -10,65 +11,86 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import NotFound from "./pages/NotFound.jsx";
 import MyMovies from "./pages/MyMovies.jsx";
 import UserMovieForm from "./pages/UserMovieForm.jsx";
+import AdminUsers from "./pages/AdminUsers.jsx";
 
 export default function App() {
     return (
         <>
-            <Navbar />
-
             <Routes>
-                {/* Publikus oldalak */}
-                <Route path="/" element={<MovieList />} />
-                <Route path="/categories" element={<CategoryList />} />
+                {/* NAVBAR NÉLKÜLI OLDALAK */}
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* Saját lista (User) */}
+                {/* MINDEN MÁS OLDAL NAVBARRAL */}
                 <Route
-                    path="/my-movies"
+                    path="*"
                     element={
-                        <ProtectedRoute>
-                            <MyMovies />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/my-movies/new"
-                    element={
-                        <ProtectedRoute>
-                            <UserMovieForm />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/my-movies/:id/edit"
-                    element={
-                        <ProtectedRoute>
-                            <UserMovieForm />
-                        </ProtectedRoute>
-                    }
-                />
+                        <>
+                            <Navbar />
 
-                {/* Admin film-létrehozás és módosítás */}
-                <Route
-                    path="/movies/new"
-                    element={
-                        <ProtectedRoute adminOnly>
-                            <MovieForm />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/movies/:id/edit"
-                    element={
-                        <ProtectedRoute adminOnly>
-                            <MovieForm />
-                        </ProtectedRoute>
-                    }
-                />
+                            <Routes>
+                                <Route path="/" element={<MovieList />} />
+                                <Route path="/categories" element={<CategoryList />} />
 
-                {/* 404 */}
-                <Route path="*" element={<NotFound />} />
+                                <Route
+                                    path="/my-movies"
+                                    element={
+                                        <ProtectedRoute>
+                                            <MyMovies />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/my-movies/new"
+                                    element={
+                                        <ProtectedRoute>
+                                            <UserMovieForm />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/my-movies/:id/edit"
+                                    element={
+                                        <ProtectedRoute>
+                                            <UserMovieForm />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/movies/new"
+                                    element={
+                                        <ProtectedRoute adminOnly>
+                                            <MovieForm />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/movies/:id/edit"
+                                    element={
+                                        <ProtectedRoute adminOnly>
+                                            <MovieForm />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route
+                                    path="/admin/users"
+                                    element={
+                                        <ProtectedRoute adminOnly>
+                                            <AdminUsers />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
+                                <Route path="*" element={<NotFound />} />
+                            </Routes>
+                        </>
+                    }
+                />
             </Routes>
         </>
     );
