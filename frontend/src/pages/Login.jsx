@@ -34,7 +34,7 @@ export default function Login() {
     };
 
     return (
-        <div className="page auth-page">
+        <div className="page-login">
             <div className="neo-card auth-card">
                 <div className="neo-card-inner">
 

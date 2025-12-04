@@ -116,9 +116,13 @@ body {
   padding: 24px;
   border-radius: 22px;
   border: 1px solid rgba(255,255,255,0.05);
-  box-shadow: var(--shadow-out);
   position: relative;
+  box-shadow: var(--shadow-out);
+
 }
+
+
+
 
 /* ============================================
    📘 NAVBAR CYBER STYLE
@@ -145,7 +149,6 @@ nav a:hover {
 /* ============================================
    👤 LOGIN / REGISTER
    ============================================ */
-
 .auth-page {
   max-width: 420px;
   margin: 80px auto;
@@ -209,6 +212,7 @@ nav a:hover {
 }
 
 
+
 .category-item {
   padding: 18px;
   background: var(--bg-card);
@@ -246,14 +250,15 @@ nav a:hover {
 
 .auth-card {
   padding: 40px 34px;
+  margin-top: 100px;
   border-radius: 22px;
   background: #0c0f17;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(6px);
 
   box-shadow:
           4px 4px 14px #05060a,
           -4px -4px 14px #141722,
-          0 0 25px rgba(0,255,255,0.25);
+          0 0 13px rgba(0,255,255,0.25);
 }
 
 .auth-title {
@@ -262,7 +267,7 @@ nav a:hover {
   font-weight: 700;
   margin-bottom: 26px;
   color: var(--accent-cyan);
-  text-shadow: 0 0 14px var(--accent-cyan);
+  text-shadow: 0 0 7px var(--accent-cyan);
 }
 
 .auth-form {
@@ -601,6 +606,21 @@ nav a:hover {
   padding: 20px;
 }
 
+
+/* ---- USER FORM PAGE WRAPPER ---- */
+.page-user-form {
+  background: radial-gradient(circle at top left, #0f141b 0%, #1a1f27 50%, #10141b 100%);
+  min-height: 100vh;
+  padding: 40px 20px;
+
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+
 /* hogy a grid ne ragadjon rá */
 .movie-grid {
   margin-top: 20px;
@@ -608,17 +628,21 @@ nav a:hover {
 
 
 .form-card {
-  width: 70%;
-  margin: auto;
-  margin-top: 40px;
+  width: 100%;
+  max-width: 900px;
   padding: 40px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,0.18);
-  backdrop-filter: blur(14px);
-  box-shadow:
-          0 4px 20px rgba(0,0,0,0.2),
-          0 0 25px rgba(0,255,255,0.15);
+  border-radius: 24px;
+
+  background: linear-gradient(
+          135deg,
+          rgba(13, 20, 23, 0.8),
+          rgba(15, 25, 30, 0.85)
+  );
+
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 10px rgba(0,255,255,0.08);
+
+  backdrop-filter: blur(10px);
 }
 
 .form-title {
@@ -631,20 +655,24 @@ nav a:hover {
 
 .form-input {
   width: 100%;
-  padding: 14px;
+  padding: 14px 18px;
+  margin-top: 12px;
+
+  background: rgba(20, 25, 35, 0.55);
   border-radius: 14px;
-  margin-bottom: 16px;
-  font-size: 15px;
   border: 1px solid rgba(0,255,255,0.18);
-  background: rgba(10,15,20,0.45);
-  color: #eaffff;
-  backdrop-filter: blur(10px);
+
+  color: #e8ffff;
+  font-size: 16px;
+
+  backdrop-filter: blur(8px);
   transition: 0.25s ease;
 }
 
 .form-input:focus {
-  border-color: rgba(0,255,255,0.6);
-  box-shadow: 0 0 10px rgba(0,255,255,0.7);
+  outline: none;
+  border-color: rgba(0,255,255,0.55);
+  box-shadow: 0 0 12px rgba(0,255,255,0.4);
 }
 
 .form-row {
@@ -733,6 +761,53 @@ select.filter-input {
   border-color: rgba(0,255,255,0.6);
   box-shadow: 0 0 10px rgba(0,255,255,0.5);
 }
+
+
+/*************************************** KATEGÓRIÁK OLDAL ********************************/
+.page-category {
+  min-height: 100vh;
+  width: 100%;
+  padding: 40px 20px;
+
+  background: radial-gradient(circle at top left, #0f141b 0%, #1a1f27 50%, #10141b 100%);
+
+  align-items: center;
+  color: #e8ffff;
+}
+
+/********************************************** LOGIN PAGE ************************************/
+.page-login {
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 80px;
+
+  /* ugyanaz a háttér mint a filmoldalakon */
+  background: radial-gradient(
+          ellipse at top left,
+          #0d1a20 0%,
+          #0b161c 30%,
+          #081014 60%,
+          #060a0d 100%
+  );
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+
+.auth-link-row {
+  color: white;
+  padding-right: 0px;
+}
+
+.auth-link{
+  padding-left: 250px;
+}
+
+
+/*********************************** REGISZTRÁCIÓS OLDAL ********************************************/
+
 
 
 

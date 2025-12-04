@@ -56,16 +56,16 @@ export default function CategoryList() {
         if (!isAdmin) navigate(`/?categoryId=${id}`);
     };
 
-    if (loading) return <div className="page">Betöltés...</div>;
+    if (loading) return <div className="page-category">Betöltés...</div>;
 
     return (
-        <div className="page">
+        <div className="page-category">
             <h1 className="category-title">Kategóriák</h1>
 
             <div className="neo-card">
                 <div className="neo-card-inner">
 
-                    {/* FENTI SOR */}
+                    {/* Fenti sor */}
                     <div
                         style={{
                             display: "flex",
@@ -85,7 +85,7 @@ export default function CategoryList() {
                         )}
                     </div>
 
-                    {/* ÚJ KATEGÓRIA MEZŐ */}
+                    {/* Új kategória mező */}
                     {adding && (
                         <div style={{ marginBottom: 20, display: "flex", gap: 12 }}>
                             <input
@@ -109,7 +109,7 @@ export default function CategoryList() {
                         </div>
                     )}
 
-                    {/* KATEGÓRIA KÁRTYÁK */}
+                    {/* Kategória kártyák */}
                     <div className="category-grid">
                         {categories.map((cat) => (
                             <div

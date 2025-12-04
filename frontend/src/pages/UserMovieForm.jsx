@@ -81,6 +81,7 @@ export default function UserMovieForm() {
         try {
             if (id) await api.put(`/user/movies/${id}`, payload);
             else await api.post("/user/movies", payload);
+
             localStorage.removeItem("userMovieDraft");
             navigate("/my-movies");
         } catch (err) {
@@ -91,102 +92,105 @@ export default function UserMovieForm() {
     if (loading) return <div className="form-loading">Betöltés...</div>;
 
     return (
-        <div className="form-card">
-            <h2 className="form-title">
-                {id ? "Saját film szerkesztése" : "Új saját film hozzáadása"}
-            </h2>
+        <div className="page-user-form">
+            <div className="form-card">
 
-            <form onSubmit={submit}>
-                <input
-                    className="form-input"
-                    placeholder="Cím *"
-                    required
-                    value={form.title}
-                    onChange={(e) => change("title", e.target.value)}
-                />
+                <h2 className="form-title">
+                    {id ? "Saját film szerkesztése" : "Új saját film hozzáadása"}
+                </h2>
 
-                <input
-                    className="form-input"
-                    placeholder="Rendező"
-                    value={form.director}
-                    onChange={(e) => change("director", e.target.value)}
-                />
-
-                <div className="form-row">
+                <form onSubmit={submit}>
                     <input
                         className="form-input"
-                        placeholder="Megjelenés éve"
-                        type="number"
-                        value={form.releaseYear}
-                        onChange={(e) => change("releaseYear", e.target.value)}
+                        placeholder="Cím *"
+                        required
+                        value={form.title}
+                        onChange={(e) => change("title", e.target.value)}
                     />
 
                     <input
                         className="form-input"
-                        placeholder="Értékelés (1–10)"
-                        type="number"
-                        min="0"
-                        max="10"
-                        step="0.1"
-                        value={form.rating}
-                        onChange={(e) => change("rating", e.target.value)}
+                        placeholder="Rendező"
+                        value={form.director}
+                        onChange={(e) => change("director", e.target.value)}
                     />
-                </div>
 
-                <textarea
-                    className="form-input"
-                    placeholder="Leírás"
-                    rows="4"
-                    value={form.description}
-                    onChange={(e) => change("description", e.target.value)}
-                />
+                    <div className="form-row">
+                        <input
+                            className="form-input"
+                            placeholder="Megjelenés éve"
+                            type="number"
+                            value={form.releaseYear}
+                            onChange={(e) => change("releaseYear", e.target.value)}
+                        />
 
-                <input
-                    className="form-input"
-                    placeholder="Plakát URL"
-                    value={form.posterUrl}
-                    onChange={(e) => change("posterUrl", e.target.value)}
-                />
+                        <input
+                            className="form-input"
+                            placeholder="Értékelés (1–10)"
+                            type="number"
+                            min="0"
+                            max="10"
+                            step="0.1"
+                            value={form.rating}
+                            onChange={(e) => change("rating", e.target.value)}
+                        />
+                    </div>
 
-                {form.posterUrl && (
-                    <img
-                        src={form.posterUrl}
-                        className="form-preview"
-                        alt="Előnézet"
-                        onError={(e) => (e.currentTarget.style.display = "none")}
+                    <textarea
+                        className="form-input"
+                        placeholder="Leírás"
+                        rows="4"
+                        value={form.description}
+                        onChange={(e) => change("description", e.target.value)}
                     />
-                )}
 
-                <select
-                    className="form-input"
-                    value={form.categoryId}
-                    onChange={(e) => change("categoryId", e.target.value)}
-                >
-                    <option value="">Válassz kategóriát...</option>
-                    {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                            {c.name}
-                        </option>
-                    ))}
-                </select>
+                    <input
+                        className="form-input"
+                        placeholder="Plakát URL"
+                        value={form.posterUrl}
+                        onChange={(e) => change("posterUrl", e.target.value)}
+                    />
 
-                <div className="form-btn-row">
-                    <button
-                        type="button"
-                        className="action-btn action-delete form-action"
-                        onClick={() => navigate("/my-movies")}
+                    {form.posterUrl && (
+                        <img
+                            src={form.posterUrl}
+                            className="form-preview"
+                            alt="Előnézet"
+                            onError={(e) => (e.currentTarget.style.display = "none")}
+                        />
+                    )}
+
+                    <select
+                        className="form-input"
+                        value={form.categoryId}
+                        onChange={(e) => change("categoryId", e.target.value)}
                     >
-                        🗑️ Mégse
-                    </button>
+                        <option value="">Válassz kategóriát...</option>
+                        {categories.map((c) => (
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
+                        ))}
+                    </select>
 
-                    <button
-                        type="submit"
-                        className="action-btn action-edit form-action"
-                    >
-                        ✏️ Mentés
-                    </button>
-                </div>
-            </form>
+                    <div className="form-btn-row">
+                        <button
+                            type="button"
+                            className="action-btn action-delete form-action"
+                            onClick={() => navigate("/my-movies")}
+                        >
+                            🗑️ Mégse
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="action-btn action-edit form-action"
+                        >
+                            ✏️ Mentés
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
