@@ -4,93 +4,101 @@ import api, { auth } from "../api/client";
 
 export default function CategoryList() {
     const [categories, setCategories] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
     const [adding, setAdding] = useState(false);
     const [newName, setNewName] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
     const user = auth.getUser();
     const isAdmin = user?.role === "ADMIN";
 
-    const loadCategories = async () => {
+    const load = async () => {
         try {
             const res = await api.get("/categories");
-            const unique = Array.from(
-                new Map(res.data.map((c) => [c.name.toLowerCase(), c])).values()
-            );
-            setCategories(unique);
+            setCategories(res.data);
         } catch {
-            setError("Hiba történt a kategóriák betöltésekor.");
+            setError("Nem sikerült betölteni a kategóriákat.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        loadCategories();
+        load();
     }, []);
 
-    const handleAddCategory = async () => {
-        const name = newName.trim();
-        if (!name) return alert("Adj meg egy kategórianemet!");
-
-        // Ellenőrzés: létezik-e már
-        if (categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-            alert("Ez a kategória már létezik!");
-            return;
-        }
+    const addCategory = async () => {
+        if (!newName.trim()) return;
 
         try {
-            await api.post("/categories", { name });
+            await api.post("/categories", { name: newName });
             setNewName("");
             setAdding(false);
-            loadCategories();
-        } catch (err) {
-            alert("Hiba történt a mentéskor!");
+            load();
+        } catch {
+            alert("Hiba a létrehozás során!");
         }
     };
 
-    const handleDelete = async (id) => {
+    const deleteCategory = async (id) => {
         if (!window.confirm("Biztosan törlöd ezt a kategóriát?")) return;
 
         try {
             await api.delete(`/categories/${id}`);
-            loadCategories();
+            load();
         } catch {
             alert("A törlés nem sikerült!");
         }
     };
 
-    const handleCategoryClick = (categoryId) => {
-        if (!isAdmin) navigate(`/?categoryId=${categoryId}`);
+    const openCategory = (id) => {
+        if (!isAdmin) navigate(`/?categoryId=${id}`);
     };
 
-    if (loading) return <div className="page neon-page">Betöltés…</div>;
-    if (error) return <div className="page neon-page" style={{ color: "red" }}>{error}</div>;
+    if (loading) return <div className="page">Betöltés...</div>;
 
     return (
-        <div className="page neon-page">
-            <h2 className="page-title">Kategóriák</h2>
+        <div className="page">
+            <h1 className="category-title">Kategóriák</h1>
 
-            {/* ÚJ KATEGÓRIA FORM */}
-            {isAdmin && adding && (
-                <div className="neo-card" style={{ marginBottom: 20 }}>
-                    <div className="neo-card-inner">
-                        <div style={{ display: "flex", gap: 12 }}>
+            <div className="neo-card">
+                <div className="neo-card-inner">
+
+                    {/* FENTI SOR */}
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginBottom: 20,
+                        }}
+                    >
+                        <div className="category-count">
+                            Összes kategória: <strong>{categories.length}</strong>
+                        </div>
+
+                        {isAdmin && !adding && (
+                            <button className="btn" onClick={() => setAdding(true)}>
+                                + Új kategória
+                            </button>
+                        )}
+                    </div>
+
+                    {/* ÚJ KATEGÓRIA MEZŐ */}
+                    {adding && (
+                        <div style={{ marginBottom: 20, display: "flex", gap: 12 }}>
                             <input
-                                className="neo-input"
+                                className="input input--pill"
                                 placeholder="Kategória neve"
                                 value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
                             />
-
-                            <button className="neo-btn save" onClick={handleAddCategory}>
+                            <button className="btn" onClick={addCategory}>
                                 Mentés
                             </button>
-
                             <button
-                                className="neo-btn cancel"
+                                className="btn btn--danger"
                                 onClick={() => {
                                     setAdding(false);
                                     setNewName("");
@@ -99,58 +107,35 @@ export default function CategoryList() {
                                 Mégse
                             </button>
                         </div>
-                    </div>
-                </div>
-            )}
+                    )}
 
-            {/* KATEGÓRIÁK LISTÁJA */}
-            <div className="neo-card">
-                <div className="neo-card-inner">
-                    <div style={{ marginBottom: 12, display: "flex", justifyContent: "space-between" }}>
-                        <span style={{ color: "#aab" }}>
-                            Összes kategória: <b>{categories.length}</b>
-                        </span>
-
-                        {isAdmin && (
-                            <button
-                                className="neo-btn save"
-                                onClick={() => setAdding(true)}
-                            >
-                                Új kategória
-                            </button>
-                        )}
-                    </div>
-
-                    <ul style={{ listStyle: "none", padding: 0 }}>
+                    {/* KATEGÓRIA KÁRTYÁK */}
+                    <div className="category-grid">
                         {categories.map((cat) => (
-                            <li
+                            <div
                                 key={cat.id}
-                                className="neo-list-item"
-                                onClick={() => handleCategoryClick(cat.id)}
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    cursor: !isAdmin ? "pointer" : "default",
-                                }}
+                                className="category-card"
+                                onClick={() => openCategory(cat.id)}
+                                style={{ cursor: isAdmin ? "default" : "pointer" }}
                             >
-                                <span>{cat.name}</span>
+                                <div className="category-name">{cat.name}</div>
 
                                 {isAdmin && (
                                     <button
-                                        className="neo-btn delete"
-                                        onClick={() => handleDelete(cat.id)}
+                                        className="btn btn--danger"
+                                        style={{ marginTop: 12 }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            deleteCategory(cat.id);
+                                        }}
                                     >
                                         Törlés
                                     </button>
                                 )}
-                            </li>
+                            </div>
                         ))}
+                    </div>
 
-                        {categories.length === 0 && (
-                            <li style={{ padding: 14, opacity: 0.7 }}>Nincsenek kategóriák.</li>
-                        )}
-                    </ul>
                 </div>
             </div>
         </div>
