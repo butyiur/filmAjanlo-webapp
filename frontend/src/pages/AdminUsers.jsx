@@ -25,34 +25,34 @@ export default function AdminUsers() {
 
     const deleteUser = async (id) => {
         if (currentUser && currentUser.id === id) {
-            alert("Nem törölheted saját magad!");
+            alert("You cannot delete yourself!");
             return;
         }
-        if (!window.confirm("Biztosan törlöd ezt a felhasználót?")) return;
+        if (!window.confirm("Are you sure about deleting this user?")) return;
 
         await api.delete(`/admin/users/${id}`);
         await load();
     };
 
     return (
-        <div className="page neon-page admin-users-page">
-            <h2 className="page-title">Felhasználók</h2>
+        <div className="admin-users-page">
+            <h2 className="admin-users-page-title">Felhasználók</h2>
 
-            <div className="neo-card">
-                <div className="neo-card-inner">
+            <div className="admin-users-card">
+                <div className="admin-users-inner">
 
                     {/* FELSŐ SOR */}
                     <div className="top-row">
                         <div>
                             <div style={{ fontSize: 13, color: "#9ca3af" }}>
-                                Összes felhasználó:{" "}
+                                All users:{" "}
                                 <strong>{users.length}</strong>
                             </div>
                         </div>
 
                         <input
                             className="neo-input search-input"
-                            placeholder="Keresés felhasználónévre..."
+                            placeholder="Searc username..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
@@ -64,11 +64,11 @@ export default function AdminUsers() {
                             <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Felhasználónév</th>
-                                <th>Szerepkör</th>
-                                <th>Létrehozva</th>
-                                <th>Utolsó belépés</th>
-                                <th>Műveletek</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>CreatedAt</th>
+                                <th>Last Login</th>
+                                <th>Operations</th>
                             </tr>
                             </thead>
 
@@ -113,7 +113,7 @@ export default function AdminUsers() {
                                                     .slice(0, 19)
                                                 : (
                                                     <span className="tag-muted">
-                                                            még nem lépett be
+                                                            did not logged in.
                                                         </span>
                                                 )}
                                         </td>
@@ -125,7 +125,7 @@ export default function AdminUsers() {
                                                         deleteUser(u.id)
                                                     }
                                                 >
-                                                    Törlés
+                                                    Delete
                                                 </button>
                                             )}
 
@@ -134,7 +134,7 @@ export default function AdminUsers() {
                                                     className="neo-btn cancel"
                                                     disabled
                                                 >
-                                                    Saját fiók
+                                                    Own account
                                                 </button>
                                             )}
                                         </td>
@@ -151,7 +151,7 @@ export default function AdminUsers() {
                                             padding: 18,
                                         }}
                                     >
-                                        Nincs találat.
+                                        No results.
                                     </td>
                                 </tr>
                             )}

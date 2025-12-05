@@ -48,7 +48,7 @@ export default function Navbar() {
 
                     {isAdmin && (
                         <Link component={RouterLink} to="/admin/users" className={linkClass("/admin/users")}>
-                            Felhasználók
+                            Users
                         </Link>
                     )}
                 </Stack>

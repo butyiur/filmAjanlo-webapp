@@ -268,7 +268,9 @@ nav a:hover {
   margin-bottom: 26px;
   color: var(--accent-cyan);
   text-shadow: 0 0 7px var(--accent-cyan);
+  align-content: center;
 }
+
 
 .auth-form {
   display: grid;
@@ -372,44 +374,90 @@ nav a:hover {
 /*************************************KATEGÓRIÁK OLDAL********************************/
 /* === CATEGORY GRID === */
 
+/* ===== CATEGORY GRID ===== */
+
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-  margin-top: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 26px;
+  margin-top: 20px;
 }
 
-/* === CATEGORY CARD === */
+/* ===== CATEGORY CARD ===== */
 
 .category-card {
-  background: #0c0f17;
+  background: rgba(10, 15, 22, 0.75);
   border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 0 18px rgba(0,255,255,0.12);
+  padding: 28px 20px;
+
+  text-align: center;
   border: 1px solid rgba(0,255,255,0.12);
+  box-shadow: 0 0 12px rgba(0,255,255,0.08);
+
   transition: 0.25s ease;
+  backdrop-filter: blur(6px);
 }
 
 .category-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 0 28px rgba(0,255,255,0.35);
+  box-shadow: 0 0 18px rgba(0,255,255,0.35);
   border-color: rgba(0,255,255,0.35);
 }
 
+/* ===== CATEGORY TITLE ===== */
+
 .category-name {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  color: #6fffea;
-  text-shadow: 0 0 6px rgba(0,255,255,0.35);
+
+  color: #afffff;
+  text-shadow: 0 0 10px rgba(0,255,255,0.6);
+}
+
+
+/* ===== DELETE BUTTON ===== */
+
+.category-delete-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+  padding-top: 10px;
+
+  background: rgba(160, 60, 60, 0.15); !important
+  color: #ffbbbb;
+
+  border: 1px solid rgba(255,60,60,0.35);
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.category-add-btn {
+  padding: 8px 16px;
+  border-radius: 12px;
+
+  background: rgb(0,255,255,0.7); !important
+color: #ffbbbb;
+
+  border: 1px solid rgba(255,60,60,0.35);
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.category-delete-btn:hover {
+  background: rgba(255,60,60,0.28); !important;
+  box-shadow: 0 0 12px rgba(255,60,60,0.5); !important;
+  transform: translateY(-2px); !important;
 }
 
 .category-title {
   font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 32px;
   padding-left: 14px;
   color: #e8f9ff;
   text-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+  text-align: center;
 }
 
 .category-count {
@@ -419,6 +467,44 @@ nav a:hover {
   padding-left: 18px;
   text-shadow: 0 0 6px rgba(0, 255, 255, 0.25);
 }
+
+
+.neo-btn {
+  padding: 10px 22px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  transition: 0.25s ease;
+}
+
+.neo-btn.save {
+  background: rgba(0,255,255,0.22);
+  color: #afffff;
+  border: 1px solid rgba(0,255,255,0.4);
+  max-width: 150px;
+}
+
+.neo-btn.save:hover {
+  background: rgba(0,255,255,0.35);
+  box-shadow: 0 0 16px rgba(0,255,255,0.6);
+  transform: translateY(-2px);
+}
+
+.neo-btn.cancel {
+  background: rgba(255,255,255,0.08);
+  color: #ccc;
+  max-width: 150px;
+}
+
+.neo-btn.cancel:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+
 
 /****************************FŐOLDAL ÉS SAJÁT LISTA OLDAL*************************** */
 
@@ -834,6 +920,82 @@ select.filter-input {
 }
 
 
+/* --- GOMBOK EGY SORBAN --- */
+.reg-btn-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 18px;
+}
+
+/* --- ALAP GOMB STÍLUS --- */
+.reg-btn {
+  padding: 12px 26px;
+  border-radius: 14px;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+/* --- FŐ GOMB (Registration) --- */
+.reg-btn.primary {
+  background: rgba(0,255,255,0.22);
+  color: #afffff;
+  border: 1px solid rgba(0,255,255,0.35);
+}
+
+.reg-btn.primary:hover {
+  background: rgba(0,255,255,0.35);
+  box-shadow: 0 0 14px rgba(0,255,255,0.55);
+  transform: translateY(-3px);
+}
+
+/* --- MÁSODLAGOS GOMB (Go to Login) --- */
+.reg-btn.secondary {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ffcccc;
+  border: 1px solid rgba(255, 80, 80, 0.25);
+}
+
+.reg-btn.secondary:hover {
+  background: rgba(255, 80, 80, 0.25);
+  box-shadow: 0 0 12px rgba(255, 80, 80, 0.45);
+  transform: translateY(-3px);
+}
+
+
+/* --- LOGIN OLDAL GOMB (széles, középre igazított) --- */
+.login-btn-save {
+  width: 20%;
+  padding: 14px;
+  margin-top: 18px;
+
+  background: rgba(0,255,255,0.22);
+  color: #afffff;
+  font-size: 17px;
+  font-weight: 500;
+
+  border: 1px solid rgba(0,255,255,0.35);
+  border-radius: 14px;
+
+  cursor: pointer;
+  transition: 0.25s ease;
+  backdrop-filter: blur(6px);
+
+  box-shadow: 0 0 12px rgba(0,255,255,0.2);
+
+  display: block;
+  margin: 10px auto 0 auto;   /* KÖZÉPRE TESZI A GOMBOT */
+}
+
+.login-btn-save:hover {
+  background: rgba(0,255,255,0.35);
+  box-shadow: 0 0 18px rgba(0,255,255,0.55);
+  transform: translateY(-3px);
+}
+
+
 
 /******************************************* NAVBAR ************************************/
 
@@ -923,7 +1085,196 @@ select.filter-input {
 }
 
 
-.neo-navbar{
+.neo-navbar {
   padding-top: 10px;
   padding-bottom: 10px;
 }
+
+
+
+
+/********************************************* ADMIN MOVIE FORM ***************************************/
+
+/**** minden benne van a movieFormba *******/
+
+
+
+/********************************* Users Oldal Admin Roleban (AdminUsers) *************************//
+
+.admin-users-page {
+  position: relative;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.admin-users-page::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+
+  background: radial-gradient(circle at top left, #0a1017 0%, #0f161e 50%, #0a0f14 100%);
+}
+
+
+.neo-card {
+  background: rgba(13, 20, 23, 0.65);
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,255,0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 12px rgba(0,255,255,0.06);
+  padding: 30px;
+}
+
+.neo-card-inner {
+  width: 100%;
+}
+
+.top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.search-input {
+  width: 280px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,255,255,0.18);
+
+  background: rgba(10,20,30,0.55);
+  color: #eaffff;
+
+  backdrop-filter: blur(6px);
+  transition: .3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: rgba(0,255,255,0.6);
+  box-shadow: 0 0 10px rgba(0,255,255,0.5);
+}
+
+.neo-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.neo-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #e8ffff;
+  font-size: 15px;
+}
+
+.neo-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #aafcff;
+  border-bottom: 1px solid rgba(0,255,255,0.2);
+  text-shadow: 0 0 8px rgba(0,255,255,0.45);
+  text-align: center;
+}
+
+.neo-table td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.neo-table tr:hover {
+  background: rgba(0,255,255,0.05);
+  transition: .2s ease;
+}
+
+.neo-table tr:nth-child(even) {
+  background: rgba(255,255,255,0.03);
+}
+
+.is-current-admin {
+  background: rgba(255, 80, 80, 0.12) !important;
+}
+
+.is-current-admin:hover {
+  background: rgba(255, 80, 80, 0.2) !important;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.badge--admin {
+  background: rgba(255,60,60,0.2);
+  border: 1px solid rgba(255,60,60,0.35);
+  color: #ffb3b3;
+  text-shadow: 0 0 6px rgba(255,60,60,0.5);
+}
+
+.badge--user {
+  background: rgba(0,255,255,0.12);
+  border: 1px solid rgba(0,255,255,0.25);
+  color: #aafcff;
+  text-shadow: 0 0 6px rgba(0,255,255,0.4);
+}
+
+
+.neo-btn.delete {
+  background: rgba(255,60,60,0.18);
+  border: 1px solid rgba(255,60,60,0.35);
+  color: #ffbebe;
+  border-radius: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: .25s ease;
+  display: block;
+  margin: 20px auto 0 auto;
+  width: 50%;
+}
+
+.neo-btn.delete:hover {
+  background: rgba(255,60,60,0.28);
+  box-shadow: 0 0 12px rgba(255,60,60,0.5);
+  transform: translateY(-2px);
+}
+
+.neo-btn.cancel[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+  display: block;
+  margin: 20px auto 0 auto;
+}
+
+
+.admin-users-page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  padding-left: 14px;
+  color: #e8f9ff;
+  text-shadow: 0 0 12px rgba(0, 255, 255, 0.4);
+  text-align: center;
+}
+
+
+.admin-users-card {
+  background: rgba(13, 20, 23, 0.65);
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,255,0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 12px rgba(0,255,255,0.06);
+  padding: 30px;
+  text-align: center;
+}
+
+.admin-users-inner {
+  width: 100%;
+}
+
+

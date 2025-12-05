@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/client";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function MovieForm() {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [categories, setCategories] = useState([]);
+    const [error, setError] = useState("");
+
     const [form, setForm] = useState({
         title: "",
         director: "",
@@ -19,8 +19,11 @@ export default function MovieForm() {
         posterUrl: "",
         categoryId: ""
     });
-    const [error, setError] = useState("");
 
+    const change = (key, value) =>
+        setForm(prev => ({ ...prev, [key]: value }));
+
+    // Load categories + movie (edit mode)
     useEffect(() => {
         api.get("/categories").then(r => setCategories(r.data));
 
@@ -41,14 +44,12 @@ export default function MovieForm() {
         }
     }, [id]);
 
-    const change = (k, v) => setForm(prev => ({ ...prev, [k]: v }));
-
     const submit = async (e) => {
         e.preventDefault();
         setError("");
 
         if (form.posterUrl && !/^https?:\/\//i.test(form.posterUrl)) {
-            setError("A plakát URL-nek http:// vagy https:// kezdetűnek kell lennie.");
+            setError("The poster URL should start with http:// or https://");
             return;
         }
 
@@ -64,85 +65,80 @@ export default function MovieForm() {
         };
 
         try {
-            if (id) {
-                await api.put(`/movies/${id}`, payload);
-            } else {
-                await api.post("/movies", payload);
-            }
+            if (id) await api.put(`/movies/${id}`, payload);
+            else await api.post("/movies", payload);
+
             navigate("/");
         } catch (err) {
             console.error(err);
-            setError("Mentés sikertelen.");
+            setError("Saving did not completed!");
         }
     };
 
     return (
-        <div className="neo-container">
-            <div className="neo-card">
+        <div className="page-user-form">
+            <div className="form-card">
 
-                <h2 className="neo-title">
-                    {id ? "🎬 Film szerkesztése" : "🎬 Új film hozzáadása"}
+                <h2 className="form-title">
+                    {id ? "🎬 Edit Movie" : "🎬 Add new movie"}
                 </h2>
 
-                {error && (
-                    <div className="neo-error">{error}</div>
-                )}
+                {error && <div className="neo-error">{error}</div>}
 
-                <form onSubmit={submit} className="neo-form">
+                <form onSubmit={submit}>
 
                     <input
-                        className="neo-input"
-                        placeholder="Cím *"
+                        className="form-input"
+                        placeholder="Title *"
+                        required
                         value={form.title}
                         onChange={(e) => change("title", e.target.value)}
-                        required
                     />
 
                     <input
-                        className="neo-input"
-                        placeholder="Rendező"
+                        className="form-input"
+                        placeholder="Director"
                         value={form.director}
                         onChange={(e) => change("director", e.target.value)}
                     />
 
-                    <div className="neo-row">
+                    <div className="form-row">
                         <input
-                            className="neo-input"
+                            className="form-input"
                             type="number"
-                            placeholder="Megjelenés éve"
+                            placeholder="Release Year"
                             value={form.releaseYear}
                             onChange={(e) => change("releaseYear", e.target.value)}
                         />
 
                         <input
-                            className="neo-input"
-                            placeholder="Műfaj"
-                            value={form.genre}
-                            onChange={(e) => change("genre", e.target.value)}
+                            className="form-input"
+                            type="number"
+                            placeholder="Rating (0-10)"
+                            min="0" max="10" step="0.1"
+                            value={form.rating}
+                            onChange={(e) => change("rating", e.target.value)}
                         />
                     </div>
 
                     <input
-                        className="neo-input"
-                        type="number"
-                        step="0.1"
-                        min="0"
-                        max="10"
-                        placeholder="Értékelés (1-10)"
-                        value={form.rating}
-                        onChange={(e) => change("rating", e.target.value)}
+                        className="form-input"
+                        placeholder="Genre"
+                        value={form.genre}
+                        onChange={(e) => change("genre", e.target.value)}
                     />
 
                     <textarea
-                        className="neo-textarea"
-                        placeholder="Leírás"
+                        className="form-input"
+                        placeholder="Description"
+                        rows="4"
                         value={form.description}
                         onChange={(e) => change("description", e.target.value)}
-                    ></textarea>
+                    />
 
                     <input
-                        className="neo-input"
-                        placeholder="Plakát URL (http/https)"
+                        className="form-input"
+                        placeholder="Poster URL (http/https)"
                         value={form.posterUrl}
                         onChange={(e) => change("posterUrl", e.target.value)}
                     />
@@ -150,34 +146,39 @@ export default function MovieForm() {
                     {form.posterUrl && (
                         <img
                             src={form.posterUrl}
-                            alt="preview"
-                            className="neo-preview"
-                            onError={(e) => e.currentTarget.style.display = "none"}
+                            className="form-preview"
+                            alt="Preview"
+                            onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                     )}
 
                     <select
-                        className="neo-select"
+                        className="form-input"
                         value={form.categoryId}
                         onChange={(e) => change("categoryId", e.target.value)}
                     >
                         <option value="">-- nincs kategória --</option>
                         {categories.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
+                            <option key={c.id} value={c.id}>
+                                {c.name}
+                            </option>
                         ))}
                     </select>
 
-                    <div className="neo-button-row">
+                    <div className="form-btn-row">
                         <button
                             type="button"
-                            className="neo-btn cancel"
+                            className="action-btn action-delete form-action"
                             onClick={() => navigate("/")}
                         >
-                            <CancelIcon /> Mégse
+                            ❌ Back
                         </button>
 
-                        <button type="submit" className="neo-btn save">
-                            <SaveIcon /> {id ? "Mentés" : "Hozzáadás"}
+                        <button
+                            type="submit"
+                            className="action-btn action-edit form-action"
+                        >
+                            💾 {id ? "Save" : "Add"}
                         </button>
                     </div>
 

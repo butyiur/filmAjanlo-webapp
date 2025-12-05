@@ -18,7 +18,7 @@ export default function CategoryList() {
             const res = await api.get("/categories");
             setCategories(res.data);
         } catch {
-            setError("Nem sikerült betölteni a kategóriákat.");
+            setError("Categories list is not able to be loaded.");
         } finally {
             setLoading(false);
         }
@@ -37,18 +37,18 @@ export default function CategoryList() {
             setAdding(false);
             load();
         } catch {
-            alert("Hiba a létrehozás során!");
+            alert("Error while creating!");
         }
     };
 
     const deleteCategory = async (id) => {
-        if (!window.confirm("Biztosan törlöd ezt a kategóriát?")) return;
+        if (!window.confirm("Are you sure? (deletion)")) return;
 
         try {
             await api.delete(`/categories/${id}`);
             load();
         } catch {
-            alert("A törlés nem sikerült!");
+            alert("The deletion was not successfull!");
         }
     };
 
@@ -56,14 +56,14 @@ export default function CategoryList() {
         if (!isAdmin) navigate(`/?categoryId=${id}`);
     };
 
-    if (loading) return <div className="page-category">Betöltés...</div>;
+    if (loading) return <div className="page-category">Loading...</div>;
 
     return (
         <div className="page-category">
-            <h1 className="category-title">Kategóriák</h1>
+            <h1 className="category-title">Categories</h1>
 
             <div className="neo-card">
-                <div className="neo-card-inner">
+                <div className="category-add-row">
 
                     {/* Fenti sor */}
                     <div
@@ -75,12 +75,12 @@ export default function CategoryList() {
                         }}
                     >
                         <div className="category-count">
-                            Összes kategória: <strong>{categories.length}</strong>
+                            All categories: <strong>{categories.length}</strong>
                         </div>
 
                         {isAdmin && !adding && (
-                            <button className="btn" onClick={() => setAdding(true)}>
-                                + Új kategória
+                            <button className="category-add-btn" onClick={() => setAdding(true)}>
+                                + New Category
                             </button>
                         )}
                     </div>
@@ -89,22 +89,22 @@ export default function CategoryList() {
                     {adding && (
                         <div style={{ marginBottom: 20, display: "flex", gap: 12 }}>
                             <input
-                                className="input input--pill"
-                                placeholder="Kategória neve"
+                                className="category-input"
+                                placeholder="Category Name"
                                 value={newName}
                                 onChange={(e) => setNewName(e.target.value)}
                             />
-                            <button className="btn" onClick={addCategory}>
-                                Mentés
+                            <button className="neo-btn save" onClick={addCategory}>
+                                Save
                             </button>
                             <button
-                                className="btn btn--danger"
+                                className="neo-btn cancel"
                                 onClick={() => {
                                     setAdding(false);
                                     setNewName("");
                                 }}
                             >
-                                Mégse
+                                Back
                             </button>
                         </div>
                     )}
@@ -122,14 +122,14 @@ export default function CategoryList() {
 
                                 {isAdmin && (
                                     <button
-                                        className="btn btn--danger"
+                                        className="category-delete-btn"
                                         style={{ marginTop: 12 }}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             deleteCategory(cat.id);
                                         }}
                                     >
-                                        Törlés
+                                        Delete
                                     </button>
                                 )}
                             </div>

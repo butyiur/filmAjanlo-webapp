@@ -58,7 +58,7 @@ export default function Login() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
 
-                        <button type="submit" className="neo-btn save">
+                        <button type="submit" className="login-btn-save">
                             Login
                         </button>
                     </form>

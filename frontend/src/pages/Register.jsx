@@ -23,14 +23,14 @@ export default function Register() {
         try {
             const res = await api.post("/auth/register", { username, password });
 
-            setSuccess(typeof res.data === "string" ? res.data : "Sikeres regisztráció!");
+            setSuccess(typeof res.data === "string" ? res.data : "Registration was successfull!");
 
             setTimeout(() => navigate("/login"), 1200);
         } catch (err) {
             if (err.response?.status === 400) {
-                setError(err.response.data || "A felhasználónév már foglalt!");
+                setError(err.response.data || "Username already exists!");
             } else {
-                setError("Hiba történt a regisztráció során.");
+                setError("An error occured while registrating.");
             }
         }
     };
@@ -61,12 +61,12 @@ export default function Register() {
                             onChange={(e) => setPassword(e.target.value)}
                         />
 
-                        <button type="submit" className="neo-btn save">
+                        <button type="submit" className="reg-btn primary">
                             Registration
                         </button>
 
-                        <button type="button" className="neo-btn cancel" onClick={() => navigate("/login")}>
-                            I already had an account
+                        <button type="button" className="reg-btn secondary" onClick={() => navigate("/login")}>
+                            I already have an account
                         </button>
                     </form>
 
