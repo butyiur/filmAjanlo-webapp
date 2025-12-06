@@ -28,7 +28,7 @@ export default function Navbar() {
             <Toolbar className="nav-toolbar">
 
                 <Typography variant="h6" className="nav-title">
-                    Filmajánló
+                    CineMatrix
                 </Typography>
 
                 <Stack direction="row" spacing={3} className="nav-links">

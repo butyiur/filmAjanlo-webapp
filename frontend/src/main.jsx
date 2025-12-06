@@ -22,3 +22,25 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         </BrowserRouter>
     </ThemeProvider>
 );
+
+
+// Neon cursor light effect
+document.addEventListener("mousemove", (e) => {
+    const light = document.getElementById("cursor-light");
+    if (light) {
+        light.style.left = e.clientX + "px";
+        light.style.top = e.clientY + "px";
+    }
+});
+
+
+// Parallax background effect
+document.addEventListener("mousemove", (e) => {
+    const bg = document.getElementById("parallax-bg");
+    if (!bg) return;
+
+    const x = (e.clientX / window.innerWidth - 0.5) * 20;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
+
+    bg.style.transform = `translate(${x}px, ${y}px) scale(1.03)`;
+});

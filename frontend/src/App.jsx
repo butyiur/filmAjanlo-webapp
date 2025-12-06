@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound.jsx";
 import MyMovies from "./pages/MyMovies.jsx";
 import UserMovieForm from "./pages/UserMovieForm.jsx";
 import AdminUsers from "./pages/AdminUsers.jsx";
+import NeonBackground from "./components/NeonBackground";
 
 export default function App() {
     return (
@@ -92,6 +93,7 @@ export default function App() {
                     }
                 />
             </Routes>
+            <NeonBackground />
         </>
     );
 }

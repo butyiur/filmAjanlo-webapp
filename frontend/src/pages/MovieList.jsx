@@ -53,7 +53,7 @@ export default function MovieList() {
                 setTotalPages(res.data.totalPages || 1);
             }
         } catch (err) {
-            console.error("❌ Filmek betöltése sikertelen:", err);
+            console.error("❌ Movies are not able to be loaded.", err);
         }
     };
 
@@ -62,7 +62,7 @@ export default function MovieList() {
             const res = await api.get("/categories");
             setCategories(res.data);
         } catch {
-            console.error("❌ Kategóriák betöltése sikertelen");
+            console.error("❌ Error while loading categories.");
         }
     };
 
@@ -79,13 +79,13 @@ export default function MovieList() {
     // TÖRLÉS
     // --------------------------------------------------------------------
     const handleDelete = async (id) => {
-        if (!window.confirm("Biztosan törlöd ezt a filmet?")) return;
+        if (!window.confirm("Are you sure about deleting this film?")) return;
 
         try {
             await api.delete(`/movies/${id}`);
             loadMovies();
         } catch (err) {
-            console.error("❌ Film törlése sikertelen:", err);
+            console.error("❌ Error while deleting this movie:", err);
         }
     };
 
@@ -101,14 +101,14 @@ export default function MovieList() {
 
                     <input
                         className="filter-input"
-                        placeholder="Cím keresése"
+                        placeholder="Search title"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
 
                     <input
                         className="filter-input"
-                        placeholder="Rendező"
+                        placeholder="Director"
                         value={director}
                         onChange={(e) => setDirector(e.target.value)}
                     />
@@ -118,7 +118,7 @@ export default function MovieList() {
                         value={categoryId}
                         onChange={(e) => setCategoryId(e.target.value)}
                     >
-                        <option value="">(Összes kategória)</option>
+                        <option value="">(Genre)</option>
                         {categories.map((c) => (
                             <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
@@ -126,14 +126,14 @@ export default function MovieList() {
 
                     <input
                         className="filter-input"
-                        placeholder="Év tól"
+                        placeholder="Year from"
                         value={yearFrom}
                         onChange={(e) => setYearFrom(e.target.value)}
                     />
 
                     <input
                         className="filter-input"
-                        placeholder="Év ig"
+                        placeholder="Year to"
                         value={yearTo}
                         onChange={(e) => setYearTo(e.target.value)}
                     />
@@ -143,7 +143,7 @@ export default function MovieList() {
                             className="neo-btn add"
                             onClick={() => navigate("/movies/new")}
                         >
-                            + Új Film
+                            + New Movie
                         </button>
                     )}
 
@@ -165,7 +165,9 @@ export default function MovieList() {
             <div className="movie-grid">
 
                 {movies.length === 0 && (
-                    <div className="no-results">Nincs találat.</div>
+                    <div className="no-results">
+                        <span className="no-results-glow">No results in this category.</span>
+                    </div>
                 )}
 
                 {movies.map((m) => (
@@ -178,7 +180,7 @@ export default function MovieList() {
                         <div className="movie-title">{m.title}</div>
 
                         <div className="movie-meta">
-                            {m.director || "Ismeretlen rendező"}
+                            {m.director || "Unknown Director"}
                         </div>
 
                         <div className="movie-meta">
@@ -202,14 +204,14 @@ export default function MovieList() {
                                     className="action-btn action-edit"
                                     onClick={() => navigate(`/movies/${m.id}/edit`)}
                                 >
-                                    ✏️ Szerkesztés
+                                    ✏️ Edit
                                 </button>
 
                                 <button
                                     className="action-btn action-delete"
                                     onClick={() => handleDelete(m.id)}
                                 >
-                                    🗑️ Törlés
+                                    🗑️ Deletef
                                 </button>
 
                             </div>
