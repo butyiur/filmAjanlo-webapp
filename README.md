@@ -3,6 +3,7 @@
 Full-stack Film Catalog & Personal Watchlist Application
 (Built with React + Spring Boot + JWT Security)
 
+
 ## 🚀 Overview
 - This project is a full-stack film recommendation platform that allows users to:
 - Browse globally available movies
@@ -17,6 +18,7 @@ Frontend: React (Vite) + MUI + custom neon UI
 Backend: Spring Boot + Spring Security + JWT + H2 database
 API: RESTful JSON endpoints
 Auth: Role-based (User / Admin)
+
 
 
 ## ⚙️ Tech Stack
@@ -36,6 +38,7 @@ JWT Authentication
 H2 Database (in-memory)
 Spring Data JPA
 REST API
+
 
 
 ## 📌 Features
@@ -61,10 +64,10 @@ Responsive layout
 Modern button & card components
 
 
-## 🛠 Setup Instructions (for local run)
 
-git clone 
-cd film-recommendation-app
+## 🛠 Setup Instructions (for local run)
+git clone https://github.com/butyiur/filmAjanlo-webapp.git
+cd filmAjanlo-webapp
 
 ### Backend
 cd backend
