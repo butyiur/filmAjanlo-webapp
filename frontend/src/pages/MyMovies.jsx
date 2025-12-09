@@ -137,7 +137,9 @@ export default function MyMovies() {
             <div className="movie-grid">
 
                 {movies.length === 0 && (
-                    <div className="no-results">No results.</div>
+                    <div className="no-results">
+                        <span className="no-results-glow">No results in this category.</span>
+                    </div>
                 )}
 
                 {movies.map((m) => (
