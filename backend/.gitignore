@@ -13,8 +13,6 @@ target/
 .springBeans
 .sts4-cache
 
-# H2 adatbázisfájlokat ne verziókezeljük
-*.mv.db
 
 ### IntelliJ IDEA ###
 .idea
